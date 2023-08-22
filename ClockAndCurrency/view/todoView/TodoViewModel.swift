@@ -11,7 +11,7 @@ import Foundation
 extension TodoView {
     class TodoViewModel: ObservableObject {
         @Published var width: CGFloat = 340
-        @Published var showAllTodos = false
+        @Published var showAllTodos = true
         @Published var addTodoNotificationOn = false
         @Published var showAddTodo = false
         @Published var todovalue = ""

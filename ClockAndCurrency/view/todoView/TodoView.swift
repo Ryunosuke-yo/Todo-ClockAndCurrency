@@ -220,7 +220,7 @@ struct TodoView: View {
     func onTapTodo(todo: Todos) {
         for t in todos {
             if(t.uuid == todo.uuid) {
-                t.completed = true
+                t.completed.toggle()
             }
         }
         
@@ -235,7 +235,7 @@ struct EachTodo: View {
         VStack {
             HStack {
                 HStack {
-                    Image(systemName: "checkmark.circle")
+                    Image(systemName: todo.completed ? "checkmark.circle" : "circle")
                         .resizable()
                         .frame(width: 25, height: 25)
                         .foregroundColor(.accentColor)
