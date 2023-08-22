@@ -39,7 +39,7 @@ struct TodoView: View {
             
             
             Toggle(isOn: $viewModel.showAllTodos) {
-                Text("See all todos")
+                Text("Show all todos")
                     .fontWeight(.light)
                     .foregroundColor(.appBlack)
                 
@@ -63,16 +63,20 @@ struct TodoView: View {
                     
                     switch viewModel.showAllTodos {
                     case true:
-                        EachTodo(todo: todo, width: viewModel.width) {
+                        EachTodo(todo: todo, width: viewModel.width, onTapTodo: {
                             onTapTodo(todo: todo)
-                        }
+                        }, onTapPensil: {
+                            viewModel.onTapPensil(todo: todo)
+                        })
                         .listRowSeparator(.hidden)
                     case false:
                         if let assingedDate = todo.assignedDate {
                             if(viewModel.isTheSameDate(fDate: viewModel.dateToShowTodo, sDate: assingedDate)) {
-                                EachTodo(todo: todo, width: viewModel.width) {
+                                EachTodo(todo: todo, width: viewModel.width, onTapTodo: {
                                     onTapTodo(todo: todo)
-                                }
+                                }, onTapPensil: {
+                                    viewModel.onTapPensil(todo: todo)
+                                })
                                 .listRowSeparator(.hidden)
                             }
                         }
@@ -154,7 +158,7 @@ struct TodoView: View {
                 
                 Button(action: pressAdd) {
                     HStack {
-                        Text("Add")
+                        Text(viewModel.todoMode == .add ? "Add" : "update")
                             .foregroundColor(.appWhite)
                             .font(.system(size: 17))
                     }
@@ -172,11 +176,28 @@ struct TodoView: View {
             .padding([.top], 30)
         }
         .onAppear {
-            viewModel.todovalue = ""
-            viewModel.addTodoNotificationOn = false
-            viewModel.assignedDate = Date()
-            viewModel.dateForNotofication = Date()
+            if viewModel.todoMode == .edit {
+                if let uuid = viewModel.uuidToEdit {
+                    let todoToEdit = todos.first {
+                        $0.uuid == uuid
+                    }
+                    
+                    if let selectedTodo = todoToEdit {
+                        viewModel.todovalue = selectedTodo.todoValue ?? "unknown"
+                        viewModel.addTodoNotificationOn = selectedTodo.notofication
+                        viewModel.assignedDate = selectedTodo.assignedDate ?? Date()
+                        viewModel.dateForNotofication = selectedTodo.notoficationTime ?? Date()
+                    }
+                }
+                
+                
+            }
             
+            
+        }
+        .onDisappear {
+            viewModel.resetEachValue()
+            viewModel.todoMode = .add
         }
     }
     
@@ -192,15 +213,53 @@ struct TodoView: View {
         if(viewModel.todovalue == "") {
             return
         }
-        let newTodo = Todos(context: managedObjectContext)
-        newTodo.todoValue = viewModel.todovalue
-        newTodo.assignedDate = viewModel.assignedDate
-        newTodo.notofication = viewModel.addTodoNotificationOn
-        newTodo.notoficationTime = viewModel.dateForNotofication
-        newTodo.timestamp = Date()
-        newTodo.completed = false
-        newTodo.uuid = UUID()
         
+        
+        var currentUUID = UUID()
+        if viewModel.todoMode == .add {
+            let newTodo = Todos(context: managedObjectContext)
+            newTodo.todoValue = viewModel.todovalue
+            newTodo.assignedDate = viewModel.assignedDate
+            newTodo.notofication = viewModel.addTodoNotificationOn
+            newTodo.notoficationTime = viewModel.dateForNotofication
+            newTodo.timestamp = Date()
+            newTodo.completed = false
+            newTodo.uuid = currentUUID
+        } else if viewModel.todoMode == .edit {
+            if let uuid = viewModel.uuidToEdit {
+                let todoToEdit = todos.first {
+                    $0.uuid == uuid
+                }
+                
+                currentUUID = viewModel.uuidToEdit ?? UUID()
+                
+                if let selectedTodo = todoToEdit {
+                    selectedTodo.todoValue = viewModel.todovalue
+                    selectedTodo.notofication = viewModel.addTodoNotificationOn
+                    selectedTodo.assignedDate = viewModel.assignedDate
+                    selectedTodo.notoficationTime  = viewModel.dateForNotofication
+                }
+            }
+            
+        }
+        
+        let content = UNMutableNotificationContent()
+        content.title = viewModel.todovalue
+        content.subtitle = "assigned: \(viewModel.convertDateToBannerFormat())"
+        content.sound = .default
+        
+        
+        
+        let calendar = Calendar.current
+        let notifDate = calendar.dateComponents([.day, .month, .hour, .minute], from: viewModel.dateForNotofication)
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: notifDate , repeats: false)
+        let request = UNNotificationRequest(identifier: currentUUID.uuidString , content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request)
+        
+        viewModel.todoMode = .add
+        viewModel.resetEachValue()
         PersistenceController.shared.save()
         
         viewModel.showAddTodo = false
@@ -209,15 +268,21 @@ struct TodoView: View {
     }
     
     func onSwipeDelete(indexSet: IndexSet) -> Void {
+        
         for index in indexSet {
             let todoToDelete = todos[index]
+            if let uuid = todoToDelete.uuid {
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [uuid.uuidString])
+            }
+            
             managedObjectContext.delete(todoToDelete)
         }
+        
         
         PersistenceController.shared.save()
     }
     
-    func onTapTodo(todo: Todos) {
+    func onTapTodo(todo: Todos)-> Void {
         for t in todos {
             if(t.uuid == todo.uuid) {
                 t.completed.toggle()
@@ -226,11 +291,15 @@ struct TodoView: View {
         
         PersistenceController.shared.save()
     }
+    
+    
+    
 }
 struct EachTodo: View {
     var todo : Todos
     var width: CGFloat
     var onTapTodo : ()-> Void
+    var onTapPensil : ()-> Void
     var body: some View {
         VStack {
             HStack {
@@ -263,6 +332,10 @@ struct EachTodo: View {
                     .resizable()
                     .frame(width: 18, height: 18)
                     .foregroundColor(.accentColor)
+                    .onTapGesture {
+                        onTapPensil()
+                    }
+                
                 
                 
             }

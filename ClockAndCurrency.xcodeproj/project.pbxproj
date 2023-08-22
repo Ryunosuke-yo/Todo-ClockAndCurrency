@@ -16,6 +16,8 @@
 		2B33F92C2A93F33C00F7C846 /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F92B2A93F33C00F7C846 /* TodoView.swift */; };
 		2B33F92E2A93F36A00F7C846 /* TodoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F92D2A93F36A00F7C846 /* TodoViewModel.swift */; };
 		2B33F9312A93F3AC00F7C846 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F9302A93F3AC00F7C846 /* Color.swift */; };
+		2B9AC6D02A9556F800898F05 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */; };
+		2BB5AB392A94714400869B94 /* todoMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BB5AB382A94714400869B94 /* todoMode.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,8 @@
 		2B33F92B2A93F33C00F7C846 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 		2B33F92D2A93F36A00F7C846 /* TodoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoViewModel.swift; sourceTree = "<group>"; };
 		2B33F9302A93F3AC00F7C846 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		2BB5AB382A94714400869B94 /* todoMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = todoMode.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,10 +65,12 @@
 		2B33F9152A93F2BC00F7C846 /* ClockAndCurrency */ = {
 			isa = PBXGroup;
 			children = (
+				2BB5AB372A94713400869B94 /* enum */,
 				2B33F92F2A93F3A300F7C846 /* extension */,
 				2B33F9292A93F30F00F7C846 /* view */,
 				2B33F9162A93F2BC00F7C846 /* ClockAndCurrencyApp.swift */,
 				2B33F9182A93F2BC00F7C846 /* ContentView.swift */,
+				2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */,
 				2B33F91A2A93F2BD00F7C846 /* Assets.xcassets */,
 				2B33F91F2A93F2BD00F7C846 /* Persistence.swift */,
 				2B33F9212A93F2BD00F7C846 /* ClockAndCurrency.xcdatamodeld */,
@@ -104,6 +110,14 @@
 				2B33F9302A93F3AC00F7C846 /* Color.swift */,
 			);
 			path = extension;
+			sourceTree = "<group>";
+		};
+		2BB5AB372A94713400869B94 /* enum */ = {
+			isa = PBXGroup;
+			children = (
+				2BB5AB382A94714400869B94 /* todoMode.swift */,
+			);
+			path = enum;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -179,7 +193,9 @@
 				2B33F92E2A93F36A00F7C846 /* TodoViewModel.swift in Sources */,
 				2B33F9202A93F2BD00F7C846 /* Persistence.swift in Sources */,
 				2B33F9312A93F3AC00F7C846 /* Color.swift in Sources */,
+				2B9AC6D02A9556F800898F05 /* AppDelegate.swift in Sources */,
 				2B33F9192A93F2BC00F7C846 /* ContentView.swift in Sources */,
+				2BB5AB392A94714400869B94 /* todoMode.swift in Sources */,
 				2B33F92C2A93F33C00F7C846 /* TodoView.swift in Sources */,
 				2B33F9172A93F2BC00F7C846 /* ClockAndCurrencyApp.swift in Sources */,
 				2B33F9232A93F2BD00F7C846 /* ClockAndCurrency.xcdatamodeld in Sources */,

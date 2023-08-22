@@ -7,6 +7,8 @@
 
 import SwiftUI
 import CoreData
+import UserNotifications
+
 
 struct ContentView: View {
    
@@ -16,7 +18,7 @@ struct ContentView: View {
             TabView {
                 TodoView()
                     .tabItem {
-                        Image(systemName: "alarm")
+                        Image(systemName: "checklist")
                             
                     }
             }

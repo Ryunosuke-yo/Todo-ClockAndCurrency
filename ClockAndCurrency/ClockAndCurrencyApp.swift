@@ -11,6 +11,7 @@ import SwiftUI
 struct ClockAndCurrencyApp: App {
     let persistenceController = PersistenceController.shared
     @Environment(\.scenePhase) var scenePhase
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelagate
 
     var body: some Scene {
         WindowGroup {
@@ -22,3 +23,6 @@ struct ClockAndCurrencyApp: App {
         }
     }
 }
+
+
+

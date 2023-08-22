@@ -9,7 +9,7 @@ import Foundation
 
 
 extension TodoView {
-    class TodoViewModel: ObservableObject {
+    @MainActor class TodoViewModel: ObservableObject {
         @Published var width: CGFloat = 340
         @Published var showAllTodos = true
         @Published var addTodoNotificationOn = false
@@ -18,6 +18,8 @@ extension TodoView {
         @Published var dateToShowTodo = Date()
         @Published var dateForNotofication = Date()
         @Published var assignedDate = Date()
+        @Published var todoMode = TodoMode.add
+        @Published var uuidToEdit: UUID? = nil
         
         
         func isTheSameDate(fDate: Date, sDate: Date)-> Bool {
@@ -39,6 +41,28 @@ extension TodoView {
             formatter.timeStyle = .none
             
             return formatter.string(from: date)
+        }
+        
+        func onTapPensil(todo: Todos) {
+            todoMode = .edit
+            uuidToEdit = todo.uuid
+            showAddTodo = true
+        }
+        
+        
+        func resetEachValue() {
+            todovalue = ""
+            addTodoNotificationOn = false
+            assignedDate = Date()
+            dateForNotofication = Date()
+        }
+        
+        func convertDateToBannerFormat()-> String {
+            let formatter = DateFormatter()
+            formatter.locale = Locale.current
+            formatter.dateStyle = .full
+            formatter.timeStyle = .none
+            return formatter.string(from: assignedDate)
         }
     }
 }
