@@ -16,6 +16,14 @@ struct ContentView: View {
         ZStack {
             Color.appWhite.ignoresSafeArea()
             TabView {
+                CurrencyView()
+                    .tabItem {
+                        Image(systemName: "dollarsign")
+                    }
+                ClockView()
+                    .tabItem {
+                        Image(systemName: "clock")
+                    }
                 TodoView()
                     .tabItem {
                         Image(systemName: "checklist")
@@ -25,6 +33,16 @@ struct ContentView: View {
         }
     }
     
+}
+
+
+struct BlueDivider: View {
+    var body: some View {
+        Rectangle()
+            .fill(Color.accentColor)
+            .frame(width: Layout.width.rawValue, height: 1)
+            
+    }
 }
 
     

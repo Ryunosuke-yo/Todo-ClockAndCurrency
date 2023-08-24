@@ -11,94 +11,100 @@ struct TodoView: View {
     @StateObject var viewModel = TodoViewModel()
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(sortDescriptors: []) var todos : FetchedResults<Todos>
-    
+
     var body: some View {
-        VStack {
-            HStack {
-                Text("Todo")
-                    .fontWeight(.bold)
-                    .tracking(1)
-                    .font(.system(size: 20))
-                    .foregroundColor(.appBlack)
-                Spacer()
-                Image(systemName: "plus")
-                    .resizable()
-                    .foregroundColor(.appBlack)
-                    .frame(width: 18, height: 18)
-                    .onTapGesture {
-                        viewModel.showAddTodo = true
-                    }
-                
-            }
-            .frame(width: viewModel.width)
-            .padding([.top], 10)
+        ZStack {
+            Color.appWhite.ignoresSafeArea()
             
-            Rectangle()
-                .fill(Color.accentColor)
-                .frame(height: 1)
-            
-            
-            Toggle(isOn: $viewModel.showAllTodos) {
-                Text("Show all todos")
-                    .fontWeight(.light)
-                    .foregroundColor(.appBlack)
-                
-            }
-            .frame(width: viewModel.width)
-            .padding([.top], 10)
-            .tint(.accentColor)
-            
-            if(!viewModel.showAllTodos) {
-                DatePicker(
-                    "",
-                    selection: $viewModel.dateToShowTodo,
-                    displayedComponents: [.date]
-                )
-                .labelsHidden()
-                .padding([.top], 10)
-            }
-            
-            List {
-                ForEach(todos, id: \.self) { todo in
+            VStack {
+                HStack {
+                    Text("Todo")
+                        .fontWeight(.bold)
+                        .tracking(1)
+                        .font(.system(size: 20))
+                        .foregroundColor(.appBlack)
+                    Spacer()
+                    Image(systemName: "plus")
+                        .resizable()
+                        .foregroundColor(.appBlack)
+                        .frame(width: 18, height: 18)
+                        .onTapGesture {
+                            viewModel.showAddTodo = true
+                        }
                     
-                    switch viewModel.showAllTodos {
-                    case true:
-                        EachTodo(todo: todo, width: viewModel.width, onTapTodo: {
-                            onTapTodo(todo: todo)
-                        }, onTapPensil: {
-                            viewModel.onTapPensil(todo: todo)
-                        })
-                        .listRowSeparator(.hidden)
-                    case false:
-                        if let assingedDate = todo.assignedDate {
-                            if(viewModel.isTheSameDate(fDate: viewModel.dateToShowTodo, sDate: assingedDate)) {
-                                EachTodo(todo: todo, width: viewModel.width, onTapTodo: {
+                }
+                .frame(width: Layout.width.rawValue)
+                .padding([.top], 10)
+                
+                Rectangle()
+                    .fill(Color.accentColor)
+                    .frame(height: 1)
+                
+                
+                Toggle(isOn: $viewModel.showAllTodos) {
+                    Text("Show all todos")
+                        .fontWeight(.light)
+                        .foregroundColor(.appBlack)
+                    
+                }
+                .frame(width:Layout.width.rawValue)
+                .padding([.top], 10)
+                .tint(.accentColor)
+                
+                if(!viewModel.showAllTodos) {
+                    DatePicker(
+                        "",
+                        selection: $viewModel.dateToShowTodo,
+                        displayedComponents: [.date]
+                    )
+                    .labelsHidden()
+                    .padding([.top], 10)
+                    .background(Color.appWhite)
+                }
+                
+                if todos.count > 0 {
+                    List {
+                        
+                        ForEach(todos, id: \.self) { todo in
+                            switch viewModel.showAllTodos {
+                            case true:
+                                EachTodo(todo: todo, width: Layout.width.rawValue, onTapTodo: {
                                     onTapTodo(todo: todo)
                                 }, onTapPensil: {
                                     viewModel.onTapPensil(todo: todo)
                                 })
                                 .listRowSeparator(.hidden)
+                                .listRowBackground(Color.appWhite)
+                            case false:
+                                if let assingedDate = todo.assignedDate {
+                                    if(viewModel.isTheSameDate(fDate: viewModel.dateToShowTodo, sDate: assingedDate)) {
+                                        EachTodo(todo: todo, width: Layout.width.rawValue, onTapTodo: {
+                                            onTapTodo(todo: todo)
+                                        }, onTapPensil: {
+                                            viewModel.onTapPensil(todo: todo)
+                                        })
+                                        .listRowSeparator(.hidden)
+                                        .listRowBackground(Color.appWhite)
+                                    }
+                                }
                             }
+                            
+                            
                         }
+                        
+                        .onDelete(perform: onSwipeDelete)
                     }
-                    
-                    
+                    .scrollContentBackground(.hidden)
+                    .background(Color.appWhite)
                 }
-                .onDelete(perform: onSwipeDelete)
-                
-                
                 Spacer()
             }
-            .scrollContentBackground(.hidden)
-            
-            
-        }
-        .sheet(isPresented: $viewModel.showAddTodo) {
-            renderAddTodoView()
-        }
-        
-        
-    }
+          
+            .sheet(isPresented: $viewModel.showAddTodo) {
+                renderAddTodoView()
+            }
+    
+        }}
     
     @ViewBuilder
     func renderAddTodoView ()-> some View {
@@ -111,8 +117,9 @@ struct TodoView: View {
                 
                 AddTodoEachRowWrapper {
                     TextField("Add todo", text: $viewModel.todovalue)
-                        .frame(width: viewModel.width)
-                    renderAddTodoDevider()
+                        .frame(width: Layout.width.rawValue)
+                    BlueDivider()
+                        .padding([.top], 10)
                 }
                 
                 AddTodoEachRowWrapper {
@@ -123,9 +130,11 @@ struct TodoView: View {
                             .fontWeight(.bold)
                             .tracking(0.5)
                     }
-                    .frame(width: viewModel.width)
+                    .frame(width: Layout.width.rawValue)
                     .tint(.accentColor)
-                    renderAddTodoDevider()
+                    BlueDivider()
+                        .padding([.top], 10)
+                    
                 }
                 
                 AddTodoEachRowWrapper {
@@ -137,9 +146,10 @@ struct TodoView: View {
                             .tracking(0.5)
                         
                     }
-                    .frame(width: viewModel.width)
+                    .frame(width: Layout.width.rawValue)
                     .tint(.accentColor)
-                    renderAddTodoDevider()
+                    BlueDivider()
+                        .padding([.top], 10)
                 }
                 if(viewModel.addTodoNotificationOn) {
                     AddTodoEachRowWrapper {
@@ -150,9 +160,10 @@ struct TodoView: View {
                                 .fontWeight(.bold)
                                 .tracking(0.5)
                         }
-                        .frame(width: viewModel.width)
+                        .frame(width: Layout.width.rawValue)
                         .tint(.accentColor)
-                        renderAddTodoDevider()
+                        BlueDivider()
+                            .padding([.top], 10)
                     }
                 }
                 
@@ -201,13 +212,6 @@ struct TodoView: View {
         }
     }
     
-    @ViewBuilder
-    func renderAddTodoDevider() -> some View {
-        Rectangle()
-            .fill(Color.accentColor)
-            .frame(width: viewModel.width, height: 1)
-            .padding([.top], 10)
-    }
     
     func pressAdd() -> Void {
         if(viewModel.todovalue == "") {
@@ -244,8 +248,8 @@ struct TodoView: View {
         }
         
         let content = UNMutableNotificationContent()
-        content.title = viewModel.todovalue
-        content.subtitle = "assigned: \(viewModel.convertDateToBannerFormat())"
+        content.title = "Today's Todo"
+        content.subtitle = viewModel.todovalue
         content.sound = .default
         
         
@@ -346,7 +350,8 @@ struct EachTodo: View {
                 .fill(Color.accentColor)
                 .frame(width: width, height: 1)
         }
-        .padding([.vertical], 10)
+//        .padding([.vertical], 10)
+//        .background(Color.appWhite)
     }
     
     

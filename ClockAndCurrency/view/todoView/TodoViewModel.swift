@@ -10,7 +10,6 @@ import Foundation
 
 extension TodoView {
     @MainActor class TodoViewModel: ObservableObject {
-        @Published var width: CGFloat = 340
         @Published var showAllTodos = true
         @Published var addTodoNotificationOn = false
         @Published var showAddTodo = false
