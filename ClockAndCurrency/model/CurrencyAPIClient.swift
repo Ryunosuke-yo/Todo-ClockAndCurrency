@@ -13,7 +13,7 @@ class CurrencyAPIClinet {
     private let baseURL = URL(string :"http://api.exchangeratesapi.io/v1/")
     
     private let apiKeyQuery = [
-        URLQueryItem(name: "access_key", value: "")
+        URLQueryItem(name: "access_key", value: CurrecnyApiKey)
     ]
     
     
