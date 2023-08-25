@@ -10,6 +10,8 @@ import Foundation
 extension CurrencyView {
     @MainActor
     class CurrencyViewModel: ObservableObject {
-        
+        @Published var showCurrecnyListModal = false
+        @Published var isLoading = CurrecnyLoading.loading
+        @Published var currencyList = [String : String]()
     }
 }

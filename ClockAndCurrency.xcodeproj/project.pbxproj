@@ -18,6 +18,7 @@
 		2B33F9312A93F3AC00F7C846 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F9302A93F3AC00F7C846 /* Color.swift */; };
 		2B9AC6D02A9556F800898F05 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */; };
 		2BB5AB392A94714400869B94 /* todoMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BB5AB382A94714400869B94 /* todoMode.swift */; };
+		2BC4B1B22A982154006A7708 /* CurrencyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC4B1B12A982154006A7708 /* CurrencyAPIClient.swift */; };
 		2BC5FEB12A96B75E00EAA038 /* CurrencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5FEB02A96B75E00EAA038 /* CurrencyView.swift */; };
 		2BC5FEB42A96B7F300EAA038 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5FEB32A96B7F300EAA038 /* ClockView.swift */; };
 		2BC5FEB62A96B8A600EAA038 /* CurrencyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5FEB52A96B8A600EAA038 /* CurrencyViewModel.swift */; };
@@ -37,10 +38,12 @@
 		2B33F9302A93F3AC00F7C846 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2BB5AB382A94714400869B94 /* todoMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = todoMode.swift; sourceTree = "<group>"; };
+		2BC4B1B12A982154006A7708 /* CurrencyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyAPIClient.swift; sourceTree = "<group>"; };
 		2BC5FEB02A96B75E00EAA038 /* CurrencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyView.swift; sourceTree = "<group>"; };
 		2BC5FEB32A96B7F300EAA038 /* ClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
 		2BC5FEB52A96B8A600EAA038 /* CurrencyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyViewModel.swift; sourceTree = "<group>"; };
 		2BC5FEB72A96B8F200EAA038 /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
+		2BEAA1FC2A983F59002B2854 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +76,8 @@
 		2B33F9152A93F2BC00F7C846 /* ClockAndCurrency */ = {
 			isa = PBXGroup;
 			children = (
+				2BEAA1FC2A983F59002B2854 /* Info.plist */,
+				2BC4B1B02A982141006A7708 /* model */,
 				2BB5AB372A94713400869B94 /* enum */,
 				2B33F92F2A93F3A300F7C846 /* extension */,
 				2B33F9292A93F30F00F7C846 /* view */,
@@ -129,6 +134,14 @@
 				2BC5FEB72A96B8F200EAA038 /* Layout.swift */,
 			);
 			path = enum;
+			sourceTree = "<group>";
+		};
+		2BC4B1B02A982141006A7708 /* model */ = {
+			isa = PBXGroup;
+			children = (
+				2BC4B1B12A982154006A7708 /* CurrencyAPIClient.swift */,
+			);
+			path = model;
 			sourceTree = "<group>";
 		};
 		2BC5FEAF2A96B74800EAA038 /* currencyView */ = {
@@ -222,6 +235,7 @@
 				2BC5FEB62A96B8A600EAA038 /* CurrencyViewModel.swift in Sources */,
 				2BC5FEB12A96B75E00EAA038 /* CurrencyView.swift in Sources */,
 				2B33F9202A93F2BD00F7C846 /* Persistence.swift in Sources */,
+				2BC4B1B22A982154006A7708 /* CurrencyAPIClient.swift in Sources */,
 				2BC5FEB42A96B7F300EAA038 /* ClockView.swift in Sources */,
 				2BC5FEB82A96B8F200EAA038 /* Layout.swift in Sources */,
 				2B33F9312A93F3AC00F7C846 /* Color.swift in Sources */,
@@ -362,6 +376,8 @@
 				DEVELOPMENT_TEAM = 4HXZ9JZTUY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ClockAndCurrency/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -392,6 +408,8 @@
 				DEVELOPMENT_TEAM = 4HXZ9JZTUY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ClockAndCurrency/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

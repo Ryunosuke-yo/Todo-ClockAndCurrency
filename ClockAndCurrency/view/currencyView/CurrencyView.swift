@@ -18,6 +18,8 @@ struct CurrencyView: View {
     @StateObject var viewModel = CurrencyViewModel()
     @State var value = ""
     
+    let alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    
     let data = [
         dummyData(currencyValue: 2.3, day: 1),
         dummyData(currencyValue: 5.4444444, day: 2),
@@ -83,7 +85,7 @@ struct CurrencyView: View {
                     .chartYAxis {
                         AxisMarks()
                     }
-
+                    
                     renderCurrencyInput()
                     BlueDivider()
                     Image(systemName: "arrow.up.arrow.down")
@@ -95,6 +97,61 @@ struct CurrencyView: View {
                     BlueDivider()
                 }
             }
+        }
+        .sheet(isPresented: $viewModel.showCurrecnyListModal) {
+            ZStack {
+                Color.appWhite.ignoresSafeArea()
+                VStack {
+                    Capsule()
+                        .foregroundColor(.accentColor)
+                        .frame(width: 70, height: 6)
+                        .padding(.top, 20)
+                    
+                    
+                    switch viewModel.isLoading {
+                    case .loading:
+                        ProgressView()
+                            .tint(.accentColor)
+                            .padding(.top, 10)
+                        Spacer()
+                    case .error:
+                        Text("Network error happened")
+                            .font(.system(size: 20))
+                            .foregroundColor(.accentColor)
+                            .tracking(0.5)
+                            .padding(.top, 10)
+                        Spacer()
+                    
+                    case .completed:
+                        renderCurrencyList()
+                    }
+                }
+               
+                
+            }
+            .task {
+                do {
+                    viewModel.isLoading = .loading
+                    let list = try await CurrencyAPIClinet.shared.getCurrencyList()
+                    viewModel.currencyList = list.symbols
+                    viewModel.isLoading = .completed
+                    
+                } catch CurrecnyAPIError.invalidUrl {
+                    print("invalid url")
+                    viewModel.isLoading = .error
+                } catch CurrecnyAPIError.decodeError {
+                    print("decode")
+                    viewModel.isLoading = .error
+                } catch CurrecnyAPIError.invalidResponse {
+                    print("respnse")
+                    viewModel.isLoading = .error
+                } catch {
+                    print("unexpexted")
+                    viewModel.isLoading = .error
+                }
+                
+            }
+            
         }
     }
     
@@ -116,7 +173,7 @@ struct CurrencyView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                print("pressed")
+                viewModel.showCurrecnyListModal = true
             }
             
             Spacer()
@@ -134,7 +191,44 @@ struct CurrencyView: View {
         .frame(width: Layout.width.rawValue)
         .padding([.top], 20)
     }
-}
+    
+    @ViewBuilder
+    func renderCurrencyList()-> some View {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(.accentColor)
+                
+                TextField("", text: $value)
+                    .padding([.vertical], 10)
+                    .padding([.horizontal], 5)
+                
+            }
+            .padding([.horizontal], 10)
+            .background(Color.lightGray)
+            .clipShape(Capsule())
+            .frame(width: 300)
+            .padding(.top, 10)
+            
+            
+            List {
+                ForEach(alphabet, id: \.self) { letter in
+                    Section(content: {
+                        Text("c")
+                        
+                    }, header: {
+                        Text(letter)
+                    })
+                    
+                }
+                .listRowBackground(Color.appWhite)
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color.appWhite)
+        }
+    }
+
 
 struct CurrencyView_Previews: PreviewProvider {
     static var previews: some View {

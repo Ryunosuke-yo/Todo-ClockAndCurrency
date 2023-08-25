@@ -14,4 +14,5 @@ extension Color {
     static let appWhite = Color("appWhite")
     static let appBlack = Color("appBlack")
     static let appGray = Color("appGray")
+    static let lightGray = Color("lightGray")
 }
