@@ -39,6 +39,44 @@ class CurrencyAPIClinet {
         
         
       
+        let list = try await getResult(CurrecnyList.self, finalUrl: finalUrl)
+        
+        return list
+    }
+    
+    
+    func convertCurrecnt (from: String, to: String, ammount: String) async throws  -> ConvertResult {
+        guard let baseUrl = baseURL else {
+            print("Error on convertCurrecny base url")
+            throw CurrecnyAPIError.invalidUrl
+        }
+        
+        guard var urlComponemts = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
+            print("Error on convertCurrecny url")
+            throw CurrecnyAPIError.invalidUrl
+        }
+        
+        let convertQuery = [
+            URLQueryItem(name: "from", value: from),
+            URLQueryItem(name: "to", value: to),
+            URLQueryItem(name: "amount", value: ammount)
+        ]
+        urlComponemts.path = "/convert"
+        urlComponemts.queryItems = apiKeyQuery
+        urlComponemts.queryItems = convertQuery
+        
+        guard let finalUrl = urlComponemts.url else {
+            print("Error on convert_ final url")
+            throw CurrecnyAPIError.invalidUrl
+        }
+        
+         let res = try await getResult(ConvertResult.self, finalUrl: finalUrl)
+        
+        return res
+        
+    }
+    
+    func getResult<Result: Codable> (_ t: Result.Type, finalUrl:URL) async throws -> Result {
         let (data, response) = try await URLSession.shared.data(from: finalUrl)
         
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
@@ -46,14 +84,11 @@ class CurrencyAPIClinet {
             throw CurrecnyAPIError.invalidResponse
         }
         
-        
-        
         do {
-            
             let decoder = JSONDecoder()
-            let list = try decoder.decode(CurrecnyList.self, from: data)
+            let result = try decoder.decode(Result.self, from: data)
             
-            return list
+            return result
         } catch {
             throw CurrecnyAPIError.decodeError
         }
@@ -61,21 +96,5 @@ class CurrencyAPIClinet {
 }
 
 
-struct CurrecnyList: Codable {
-    let success: Bool
-    let symbols : [String : String]
-   
-}
 
-enum CurrecnyAPIError: Error {
-    case invalidUrl
-    case invalidResponse
-    case decodeError
-}
-
-enum CurrecnyLoading {
-    case loading
-    case completed
-    case error
-}
 

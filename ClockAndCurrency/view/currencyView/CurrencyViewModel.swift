@@ -13,5 +13,27 @@ extension CurrencyView {
         @Published var showCurrecnyListModal = false
         @Published var isLoading = CurrecnyLoading.loading
         @Published var currencyList = [String : String]()
+        @Published var currecnySearchValue = ""
+        @Published var showListResult = true
+        @Published var selectedValue = SelectedValue.main
+      
+        
+        
+        func doesListInclude(_ charactor: String)-> Bool {
+            var inc = false
+            for c in currencyList {
+                if c.key.contains(charactor) {
+                    inc = true
+                   
+                }
+            }
+            return inc
+        }
     }
+}
+
+
+enum SelectedValue {
+    case main
+    case second
 }

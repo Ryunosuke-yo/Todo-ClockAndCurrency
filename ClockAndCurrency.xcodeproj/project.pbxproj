@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B28E4CA2A9BF4160028D572 /* CurrencyTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B28E4C92A9BF4160028D572 /* CurrencyTypes.swift */; };
 		2B33F9172A93F2BC00F7C846 /* ClockAndCurrencyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F9162A93F2BC00F7C846 /* ClockAndCurrencyApp.swift */; };
 		2B33F9192A93F2BC00F7C846 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F9182A93F2BC00F7C846 /* ContentView.swift */; };
 		2B33F91B2A93F2BD00F7C846 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B33F91A2A93F2BD00F7C846 /* Assets.xcassets */; };
@@ -27,6 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B28E4C92A9BF4160028D572 /* CurrencyTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyTypes.swift; sourceTree = "<group>"; };
 		2B33F9132A93F2BC00F7C846 /* ClockAndCurrency.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClockAndCurrency.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B33F9162A93F2BC00F7C846 /* ClockAndCurrencyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockAndCurrencyApp.swift; sourceTree = "<group>"; };
 		2B33F9182A93F2BC00F7C846 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				2BC4B1B12A982154006A7708 /* CurrencyAPIClient.swift */,
+				2B28E4C92A9BF4160028D572 /* CurrencyTypes.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -248,6 +251,7 @@
 				2BB5AB392A94714400869B94 /* todoMode.swift in Sources */,
 				2B33F92C2A93F33C00F7C846 /* TodoView.swift in Sources */,
 				2B33F9172A93F2BC00F7C846 /* ClockAndCurrencyApp.swift in Sources */,
+				2B28E4CA2A9BF4160028D572 /* CurrencyTypes.swift in Sources */,
 				2B33F9232A93F2BD00F7C846 /* ClockAndCurrency.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -16,7 +16,13 @@ struct dummyData: Identifiable {
 
 struct CurrencyView: View {
     @StateObject var viewModel = CurrencyViewModel()
-    @State var value = ""
+    @FocusState var showKeyboard: Bool
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @AppStorage("mainCurrecny") private var mainCurrency = ""
+    @AppStorage("secondCurrecny") private var secondCurrency = ""
+    @AppStorage("mainCurrecnyValue") private var mainCurrencyValue = ""
+    @AppStorage("secondCurrecnyValue") private var secondCurrencyValue = ""
+    
     
     let alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     
@@ -49,17 +55,21 @@ struct CurrencyView: View {
                     .fill(Color.accentColor)
                     .frame(height: 1)
                 ScrollView {
+                    // adjust scroll bar when keyboard is shown
                     HStack {
-                        Text("1 JPY")
-                            .foregroundColor(.appGray)
-                        Spacer()
-                        Text("100 CAD")
-                            .foregroundColor(.appBlack)
-                            .font(.system(size: 23))
-                            .fontWeight(.bold)
+                        HStack {
+                            Text("1 \(mainCurrency)")
+                                .foregroundColor(.appGray)
+                            Spacer()
+                            Text("100 \(secondCurrency)")
+                                .foregroundColor(.appBlack)
+                                .font(.system(size: 23))
+                                .fontWeight(.bold)
+                        }
+                        .frame(width: Layout.width.rawValue)
+                        .padding([.top], 20)
                     }
-                    .frame(width: Layout.width.rawValue)
-                    .padding([.top], 20)
+                    .frame(maxWidth: .infinity)
                     BlueDivider()
                     
                     Chart {
@@ -86,17 +96,32 @@ struct CurrencyView: View {
                         AxisMarks()
                     }
                     
-                    renderCurrencyInput()
+                    renderCurrencyInput(currecny: mainCurrency, value: $mainCurrencyValue) {
+                        viewModel.selectedValue = .main
+                        viewModel.showCurrecnyListModal = true
+                    }
                     BlueDivider()
                     Image(systemName: "arrow.up.arrow.down")
                         .resizable()
                         .frame(width: 20, height: 18)
                         .foregroundColor(.appGray)
                         .padding([.top])
-                    renderCurrencyInput()
+                    renderCurrencyInput(currecny: secondCurrency, value: $secondCurrencyValue) {
+                        viewModel.selectedValue = .second
+                        viewModel.showCurrecnyListModal = true
+                    }
                     BlueDivider()
                 }
             }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    showKeyboard.toggle()
+                }
+            }
+            
         }
         .sheet(isPresented: $viewModel.showCurrecnyListModal) {
             ZStack {
@@ -121,13 +146,15 @@ struct CurrencyView: View {
                             .tracking(0.5)
                             .padding(.top, 10)
                         Spacer()
-                    
+                        
                     case .completed:
                         renderCurrencyList()
                     }
                 }
-               
                 
+            }
+            .onDisappear {
+                viewModel.currecnySearchValue = ""
             }
             .task {
                 do {
@@ -157,13 +184,16 @@ struct CurrencyView: View {
     
     
     @ViewBuilder
-    func renderCurrencyInput()-> some View {
+    func renderCurrencyInput(currecny: String, value: Binding<String>, onTapCurrecny: @escaping ()-> Void)-> some View {
         HStack {
             HStack {
-                Text("JPY")
+                Text(currecny == "" ? "Select" : currecny)
                     .foregroundColor(.appBlack)
                     .font(.system(size: 23))
                     .fontWeight(.bold)
+                    .onTapGesture {
+                        onTapCurrecny()
+                    }
                 
                 Image(systemName: "chevron.down")
                     .resizable()
@@ -178,44 +208,63 @@ struct CurrencyView: View {
             
             Spacer()
             
+            
             Text("$")
                 .foregroundColor(.appGray)
                 .font(.system(size: 23))
                 .fontWeight(.bold)
-            TextField("0000", text: $value)
+            
+            TextField("0000", text: value)
                 .frame(width: 150)
                 .foregroundColor(.appBlack)
                 .font(.system(size: 23))
                 .fontWeight(.bold)
+                .keyboardType(.decimalPad)
+                .focused($showKeyboard)
+            
+            
         }
         .frame(width: Layout.width.rawValue)
-        .padding([.top], 20)
+        .padding([.top, ], 20)
     }
     
     @ViewBuilder
     func renderCurrencyList()-> some View {
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(.accentColor)
-                
-                TextField("", text: $value)
-                    .padding([.vertical], 10)
-                    .padding([.horizontal], 5)
-                
-            }
-            .padding([.horizontal], 10)
-            .background(Color.lightGray)
-            .clipShape(Capsule())
-            .frame(width: 300)
-            .padding(.top, 10)
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundColor(.accentColor)
             
+            TextField("", text: $viewModel.currecnySearchValue)
+                .padding([.vertical], 10)
+                .padding([.horizontal], 5)
             
+        }
+        .padding([.horizontal], 10)
+        .background(Color.lightGray)
+        .clipShape(Capsule())
+        .frame(width: 300)
+        .padding(.top, 10)
+        
+        
+        
+        if viewModel.currecnySearchValue == "" {
             List {
                 ForEach(alphabet, id: \.self) { letter in
                     Section(content: {
-                        Text("c")
+                        ForEach(Array(viewModel.currencyList.keys), id: \.self) { currecny in
+                            if let fisrt = currecny.first, fisrt == letter.first {
+                                Button(action: {
+                                    onTapCurrecnyOnList(currency: currecny)
+                                }) {
+                                    Text(currecny)
+                                        .foregroundColor(.appBlack)
+                                        .font(Font.system(size: 17))
+                                }
+                                
+                            }
+                        }
                         
                     }, header: {
                         Text(letter)
@@ -226,12 +275,46 @@ struct CurrencyView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.appWhite)
+        } else if viewModel.doesListInclude(viewModel.currecnySearchValue.uppercased())  {
+            List {
+                Section(content: {
+                    ForEach(Array(viewModel.currencyList.keys), id: \.self) { currecny in
+                        if currecny.contains(viewModel.currecnySearchValue.uppercased()) {
+                            Button(action: {
+                                onTapCurrecnyOnList(currency: currecny)
+                            }) {
+                                Text(currecny)
+                                    .foregroundColor(.appBlack)
+                                    .font(Font.system(size: 17))
+                            }
+                        }
+                        
+                    }
+                    .listRowBackground(Color.appWhite)
+                    
+                }
+                )
+            }
         }
+        
+        Spacer()
+        
     }
-
-
-struct CurrencyView_Previews: PreviewProvider {
-    static var previews: some View {
-        CurrencyView()
+    
+    
+    func onTapCurrecnyOnList(currency: String) -> Void {
+        if viewModel.selectedValue == .main {
+            mainCurrency = currency
+        } else {
+            secondCurrency = currency
+        }
+        viewModel.showCurrecnyListModal = false
     }
 }
+
+
+//struct CurrencyView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CurrencyView()
+//    }
+//}

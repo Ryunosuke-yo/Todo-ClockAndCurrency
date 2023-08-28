@@ -11,7 +11,8 @@ import UserNotifications
 
 
 struct ContentView: View {
-   
+    @Environment(\.scenePhase) var scenePhase
+    
     var body: some View {
         ZStack {
             Color.appWhite.ignoresSafeArea()
@@ -27,27 +28,26 @@ struct ContentView: View {
                 TodoView()
                     .tabItem {
                         Image(systemName: "checklist")
-                            
+                        
                     }
             }
         }
+        
     }
     
 }
-
-
 struct BlueDivider: View {
     var body: some View {
         Rectangle()
             .fill(Color.accentColor)
             .frame(width: Layout.width.rawValue, height: 1)
-            
+        
     }
 }
 
-    
 
- 
+
+
 
 
 //struct ContentView_Previews: PreviewProvider {
@@ -55,3 +55,4 @@ struct BlueDivider: View {
 //        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 //    }
 //}
+
