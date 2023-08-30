@@ -10,29 +10,37 @@ import Foundation
 struct CurrecnyList: Codable {
     let success: Bool
     let symbols : [String : String]
-   
-}
-
-struct ConvertResult: Codable {
-    let success: Bool
-    let query : [ConvertQuery]
-    let info : [ConvertInfo]
-    let historical : String
-    let date : String
-    let result: Double
-}
-
-struct ConvertQuery: Codable {
-    let from : String
-    let to : String
-    let ammount: Double
     
 }
 
-struct ConvertInfo: Codable {
-    let timestamp: Double
-    let rate : Double
+struct ConvertResult: Codable {
+    struct Query: Codable {
+        let from: String
+        let to: String
+        let amount: Double
+    }
+    
+    struct Info: Codable {
+        let timestamp: Int
+        let rate: Double
+    }
+    
+    let success: Bool
+    let query: Query
+    let info: Info
+    let date: String
+    let result: Double
 }
+
+
+struct LatestCurrencyResult: Codable {
+    let success: Bool
+    let base : String
+    let timestamp: String
+    let date: String
+    let rates: [String: Double]
+}
+
 
 enum CurrecnyAPIError: Error {
     case invalidUrl

@@ -17,6 +17,8 @@
 		2B33F92C2A93F33C00F7C846 /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F92B2A93F33C00F7C846 /* TodoView.swift */; };
 		2B33F92E2A93F36A00F7C846 /* TodoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F92D2A93F36A00F7C846 /* TodoViewModel.swift */; };
 		2B33F9312A93F3AC00F7C846 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F9302A93F3AC00F7C846 /* Color.swift */; };
+		2B4974352A9D5B3E000AA786 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2B4974342A9D5B3E000AA786 /* Alamofire */; };
+		2B7F487C2A9F20D400BE9C62 /* ClockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F487B2A9F20D400BE9C62 /* ClockViewModel.swift */; };
 		2B9AC6D02A9556F800898F05 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */; };
 		2BA049AC2A9976BF000EE2D1 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA049AB2A9976BF000EE2D1 /* Keys.swift */; };
 		2BB5AB392A94714400869B94 /* todoMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BB5AB382A94714400869B94 /* todoMode.swift */; };
@@ -39,6 +41,7 @@
 		2B33F92B2A93F33C00F7C846 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 		2B33F92D2A93F36A00F7C846 /* TodoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoViewModel.swift; sourceTree = "<group>"; };
 		2B33F9302A93F3AC00F7C846 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		2B7F487B2A9F20D400BE9C62 /* ClockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockViewModel.swift; sourceTree = "<group>"; };
 		2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2BA049AB2A9976BF000EE2D1 /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		2BB5AB382A94714400869B94 /* todoMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = todoMode.swift; sourceTree = "<group>"; };
@@ -55,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B4974352A9D5B3E000AA786 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				2BC5FEB32A96B7F300EAA038 /* ClockView.swift */,
+				2B7F487B2A9F20D400BE9C62 /* ClockViewModel.swift */,
 			);
 			path = clockView;
 			sourceTree = "<group>";
@@ -183,6 +188,9 @@
 			dependencies = (
 			);
 			name = ClockAndCurrency;
+			packageProductDependencies = (
+				2B4974342A9D5B3E000AA786 /* Alamofire */,
+			);
 			productName = ClockAndCurrency;
 			productReference = 2B33F9132A93F2BC00F7C846 /* ClockAndCurrency.app */;
 			productType = "com.apple.product-type.application";
@@ -211,6 +219,9 @@
 				Base,
 			);
 			mainGroup = 2B33F90A2A93F2BC00F7C846;
+			packageReferences = (
+				2B4974332A9D5B3E000AA786 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = 2B33F9142A93F2BC00F7C846 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -242,6 +253,7 @@
 				2BC5FEB12A96B75E00EAA038 /* CurrencyView.swift in Sources */,
 				2B33F9202A93F2BD00F7C846 /* Persistence.swift in Sources */,
 				2BA049AC2A9976BF000EE2D1 /* Keys.swift in Sources */,
+				2B7F487C2A9F20D400BE9C62 /* ClockViewModel.swift in Sources */,
 				2BC4B1B22A982154006A7708 /* CurrencyAPIClient.swift in Sources */,
 				2BC5FEB42A96B7F300EAA038 /* ClockView.swift in Sources */,
 				2BC5FEB82A96B8F200EAA038 /* Layout.swift in Sources */,
@@ -459,6 +471,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2B4974332A9D5B3E000AA786 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2B4974342A9D5B3E000AA786 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B4974332A9D5B3E000AA786 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		2B33F9212A93F2BD00F7C846 /* ClockAndCurrency.xcdatamodeld */ = {

@@ -13,6 +13,11 @@ import UserNotifications
 struct ContentView: View {
     @Environment(\.scenePhase) var scenePhase
     
+    
+    init() {
+        UITabBar.appearance().backgroundColor = .appWhite
+    }
+    
     var body: some View {
         ZStack {
             Color.appWhite.ignoresSafeArea()

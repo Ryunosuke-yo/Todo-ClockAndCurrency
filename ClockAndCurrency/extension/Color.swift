@@ -16,3 +16,7 @@ extension Color {
     static let appGray = Color("appGray")
     static let lightGray = Color("lightGray")
 }
+
+extension UIColor {
+    static let appWhite = UIColor(named: "appWhite")
+}

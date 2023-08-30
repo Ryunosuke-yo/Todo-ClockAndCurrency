@@ -256,7 +256,9 @@ struct CurrencyView: View {
                         ForEach(Array(viewModel.currencyList.keys), id: \.self) { currecny in
                             if let fisrt = currecny.first, fisrt == letter.first {
                                 Button(action: {
-                                    onTapCurrecnyOnList(currency: currecny)
+                                    Task {
+                                        try await onTapCurrecnyOnList(currency: currecny)
+                                    }
                                 }) {
                                     Text(currecny)
                                         .foregroundColor(.appBlack)
@@ -281,7 +283,12 @@ struct CurrencyView: View {
                     ForEach(Array(viewModel.currencyList.keys), id: \.self) { currecny in
                         if currecny.contains(viewModel.currecnySearchValue.uppercased()) {
                             Button(action: {
-                                onTapCurrecnyOnList(currency: currecny)
+                                Task {
+                                    try await onTapCurrecnyOnList(currency: currecny)
+                                    
+                                }
+                                
+                                
                             }) {
                                 Text(currecny)
                                     .foregroundColor(.appBlack)
@@ -302,13 +309,15 @@ struct CurrencyView: View {
     }
     
     
-    func onTapCurrecnyOnList(currency: String) -> Void {
+    func onTapCurrecnyOnList(currency: String) async throws -> Void {
         if viewModel.selectedValue == .main {
             mainCurrency = currency
         } else {
             secondCurrency = currency
         }
         viewModel.showCurrecnyListModal = false
+        let res = try await CurrencyAPIClinet.shared.getLatestRate(base: mainCurrency, symbols: [secondCurrency])
+     
     }
 }
 
