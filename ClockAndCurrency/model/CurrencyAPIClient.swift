@@ -19,12 +19,12 @@ class CurrencyAPIClinet {
     func getCurrencyList () async throws -> CurrecnyList {
         guard let baseUrl = baseURL else {
             print("Error on list ")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         
         guard var urlComponemts = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
             print("Error on getCurrencyList_ url")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         let params = [
             apiKeyQuery,
@@ -34,7 +34,7 @@ class CurrencyAPIClinet {
         
         guard let finalUrl = urlComponemts.url else {
             print("Error on getCurrencyList_ final url")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         
         
@@ -50,12 +50,12 @@ class CurrencyAPIClinet {
     func convertCurrency (from: String, to: String, amount: String) async throws  -> ConvertResult {
         guard let baseUrl = baseURL else {
             print("Error on convertCurrecny base url")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         
         guard var urlComponemts = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
             print("Error on convertCurrecny url")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         
         let convertQuery = [
@@ -69,7 +69,7 @@ class CurrencyAPIClinet {
         
         guard let finalUrl = urlComponemts.url else {
             print("Error on convert_ final url")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         let res = try await getResult(ConvertResult.self, finalUrl: finalUrl)
 
@@ -82,7 +82,7 @@ class CurrencyAPIClinet {
         print(response, "result")
         print(data)
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-            throw CurrecnyAPIError.invalidResponse
+            throw APIError.invalidResponse
         }
         
         do {
@@ -92,19 +92,19 @@ class CurrencyAPIClinet {
             return result
         } catch {
             print(error.localizedDescription)
-            throw CurrecnyAPIError.decodeError
+            throw APIError.decodeError
         }
     }
     
     func getLatestRate(base: String, symbols: [String]) async throws -> LatestCurrencyResult {
         guard let baseUrl = baseURL else {
             print("Error on latest url")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         
         guard var urlComponemts = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
             print("Error on latest url")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         var symbolsValue: String = ""
         
@@ -126,7 +126,7 @@ class CurrencyAPIClinet {
         
         guard let finalUrl = urlComponemts.url else {
             print("Error on latest_ final url")
-            throw CurrecnyAPIError.invalidUrl
+            throw APIError.invalidUrl
         }
         let res = try await getResult(LatestCurrencyResult.self, finalUrl: finalUrl)
         print(res)

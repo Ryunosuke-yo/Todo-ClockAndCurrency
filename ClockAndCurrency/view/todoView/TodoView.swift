@@ -350,8 +350,6 @@ struct EachTodo: View {
                 .fill(Color.accentColor)
                 .frame(width: width, height: 1)
         }
-//        .padding([.vertical], 10)
-//        .background(Color.appWhite)
     }
     
     

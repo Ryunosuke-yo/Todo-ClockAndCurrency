@@ -24,7 +24,7 @@ struct CurrencyView: View {
     @AppStorage("secondCurrecnyValue") private var secondCurrencyValue = ""
     
     
-    let alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+ 
     
     let data = [
         dummyData(currencyValue: 2.3, day: 1),
@@ -127,10 +127,7 @@ struct CurrencyView: View {
             ZStack {
                 Color.appWhite.ignoresSafeArea()
                 VStack {
-                    Capsule()
-                        .foregroundColor(.accentColor)
-                        .frame(width: 70, height: 6)
-                        .padding(.top, 20)
+                    BlueBar()
                     
                     
                     switch viewModel.isLoading {
@@ -163,13 +160,13 @@ struct CurrencyView: View {
                     viewModel.currencyList = list.symbols
                     viewModel.isLoading = .completed
                     
-                } catch CurrecnyAPIError.invalidUrl {
+                } catch APIError.invalidUrl {
                     print("invalid url")
                     viewModel.isLoading = .error
-                } catch CurrecnyAPIError.decodeError {
+                } catch APIError.decodeError {
                     print("decode")
                     viewModel.isLoading = .error
-                } catch CurrecnyAPIError.invalidResponse {
+                } catch APIError.invalidResponse {
                     print("respnse")
                     viewModel.isLoading = .error
                 } catch {
@@ -194,6 +191,7 @@ struct CurrencyView: View {
                     .onTapGesture {
                         onTapCurrecny()
                     }
+                    .padding(.leading, 10)
                 
                 Image(systemName: "chevron.down")
                     .resizable()
@@ -208,20 +206,19 @@ struct CurrencyView: View {
             
             Spacer()
             
-            
-            Text("$")
-                .foregroundColor(.appGray)
-                .font(.system(size: 23))
-                .fontWeight(.bold)
-            
-            TextField("0000", text: value)
-                .frame(width: 150)
-                .foregroundColor(.appBlack)
-                .font(.system(size: 23))
-                .fontWeight(.bold)
-                .keyboardType(.decimalPad)
-                .focused($showKeyboard)
-            
+           
+                Text("$")
+                    .foregroundColor(.appGray)
+                    .font(.system(size: 23))
+                    .fontWeight(.bold)
+                
+                TextField("00000", text: value)
+                    .frame(width: 100)
+                    .foregroundColor(.appBlack)
+                    .font(.system(size: 23))
+                    .fontWeight(.bold)
+                    .keyboardType(.decimalPad)
+                    .focused($showKeyboard)
             
         }
         .frame(width: Layout.width.rawValue)

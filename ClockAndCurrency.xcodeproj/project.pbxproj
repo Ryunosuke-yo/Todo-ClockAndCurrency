@@ -19,9 +19,12 @@
 		2B33F9312A93F3AC00F7C846 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B33F9302A93F3AC00F7C846 /* Color.swift */; };
 		2B4974352A9D5B3E000AA786 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2B4974342A9D5B3E000AA786 /* Alamofire */; };
 		2B7F487C2A9F20D400BE9C62 /* ClockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F487B2A9F20D400BE9C62 /* ClockViewModel.swift */; };
+		2B892C232AA04E1B009A7FB2 /* Timezone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B892C222AA04E1B009A7FB2 /* Timezone.swift */; };
 		2B9AC6D02A9556F800898F05 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */; };
 		2BA049AC2A9976BF000EE2D1 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA049AB2A9976BF000EE2D1 /* Keys.swift */; };
 		2BB5AB392A94714400869B94 /* todoMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BB5AB382A94714400869B94 /* todoMode.swift */; };
+		2BC3F2D92AA05FF00070C3A7 /* TimeZoneApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC3F2D82AA05FF00070C3A7 /* TimeZoneApiClient.swift */; };
+		2BC3F2DB2AA067770070C3A7 /* TimeZoneApiType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC3F2DA2AA067770070C3A7 /* TimeZoneApiType.swift */; };
 		2BC4B1B22A982154006A7708 /* CurrencyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC4B1B12A982154006A7708 /* CurrencyAPIClient.swift */; };
 		2BC5FEB12A96B75E00EAA038 /* CurrencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5FEB02A96B75E00EAA038 /* CurrencyView.swift */; };
 		2BC5FEB42A96B7F300EAA038 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5FEB32A96B7F300EAA038 /* ClockView.swift */; };
@@ -42,9 +45,12 @@
 		2B33F92D2A93F36A00F7C846 /* TodoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoViewModel.swift; sourceTree = "<group>"; };
 		2B33F9302A93F3AC00F7C846 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		2B7F487B2A9F20D400BE9C62 /* ClockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockViewModel.swift; sourceTree = "<group>"; };
+		2B892C222AA04E1B009A7FB2 /* Timezone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timezone.swift; sourceTree = "<group>"; };
 		2B9AC6CF2A9556F800898F05 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2BA049AB2A9976BF000EE2D1 /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		2BB5AB382A94714400869B94 /* todoMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = todoMode.swift; sourceTree = "<group>"; };
+		2BC3F2D82AA05FF00070C3A7 /* TimeZoneApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneApiClient.swift; sourceTree = "<group>"; };
+		2BC3F2DA2AA067770070C3A7 /* TimeZoneApiType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneApiType.swift; sourceTree = "<group>"; };
 		2BC4B1B12A982154006A7708 /* CurrencyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyAPIClient.swift; sourceTree = "<group>"; };
 		2BC5FEB02A96B75E00EAA038 /* CurrencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyView.swift; sourceTree = "<group>"; };
 		2BC5FEB32A96B7F300EAA038 /* ClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
@@ -132,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				2B33F9302A93F3AC00F7C846 /* Color.swift */,
+				2B892C222AA04E1B009A7FB2 /* Timezone.swift */,
 			);
 			path = extension;
 			sourceTree = "<group>";
@@ -150,6 +157,8 @@
 			children = (
 				2BC4B1B12A982154006A7708 /* CurrencyAPIClient.swift */,
 				2B28E4C92A9BF4160028D572 /* CurrencyTypes.swift */,
+				2BC3F2D82AA05FF00070C3A7 /* TimeZoneApiClient.swift */,
+				2BC3F2DA2AA067770070C3A7 /* TimeZoneApiType.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -250,6 +259,7 @@
 			files = (
 				2B33F92E2A93F36A00F7C846 /* TodoViewModel.swift in Sources */,
 				2BC5FEB62A96B8A600EAA038 /* CurrencyViewModel.swift in Sources */,
+				2B892C232AA04E1B009A7FB2 /* Timezone.swift in Sources */,
 				2BC5FEB12A96B75E00EAA038 /* CurrencyView.swift in Sources */,
 				2B33F9202A93F2BD00F7C846 /* Persistence.swift in Sources */,
 				2BA049AC2A9976BF000EE2D1 /* Keys.swift in Sources */,
@@ -258,11 +268,13 @@
 				2BC5FEB42A96B7F300EAA038 /* ClockView.swift in Sources */,
 				2BC5FEB82A96B8F200EAA038 /* Layout.swift in Sources */,
 				2B33F9312A93F3AC00F7C846 /* Color.swift in Sources */,
+				2BC3F2DB2AA067770070C3A7 /* TimeZoneApiType.swift in Sources */,
 				2B9AC6D02A9556F800898F05 /* AppDelegate.swift in Sources */,
 				2B33F9192A93F2BC00F7C846 /* ContentView.swift in Sources */,
 				2BB5AB392A94714400869B94 /* todoMode.swift in Sources */,
 				2B33F92C2A93F33C00F7C846 /* TodoView.swift in Sources */,
 				2B33F9172A93F2BC00F7C846 /* ClockAndCurrencyApp.swift in Sources */,
+				2BC3F2D92AA05FF00070C3A7 /* TimeZoneApiClient.swift in Sources */,
 				2B28E4CA2A9BF4160028D572 /* CurrencyTypes.swift in Sources */,
 				2B33F9232A93F2BD00F7C846 /* ClockAndCurrency.xcdatamodeld in Sources */,
 			);

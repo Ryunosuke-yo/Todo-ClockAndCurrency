@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 import UserNotifications
 
+let alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
 struct ContentView: View {
     @Environment(\.scenePhase) var scenePhase
@@ -47,6 +48,15 @@ struct BlueDivider: View {
             .fill(Color.accentColor)
             .frame(width: Layout.width.rawValue, height: 1)
         
+    }
+}
+
+struct BlueBar: View {
+    var body: some View {
+        Capsule()
+            .foregroundColor(.accentColor)
+            .frame(width: 70, height: 6)
+            .padding(.top, 20)
     }
 }
 

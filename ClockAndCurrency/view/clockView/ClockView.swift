@@ -58,22 +58,67 @@ struct ClockView: View {
                                 .background(Color.accentColor)
                                 .foregroundColor(.appWhite)
                                 .clipShape(Circle())
-                                
+                            
                         }
                     }
                     .padding(.trailing, 30)
                     .padding(.bottom, 60)
                     
                     
-                   
-                } else if viewModel.segmentValue == 1 {
-                    renderResultDate()
-                    renderResultDate()
-                    Spacer()
                     
+                } else if viewModel.segmentValue == 1 {
+                    ScrollView {
+                        renderResultDate(city: viewModel.mainCity)
+                        renderResultDate(city: viewModel.secondCity)
+                        
+                        
+                        DatePicker(selection: $viewModel.selectedDateAndTime, displayedComponents: [.date, .hourAndMinute]) {
+                            Text("Date")
+                                .foregroundColor(.appBlack)
+                                .font(.system(size: 20))
+                                .fontWeight(.bold)
+                                .tracking(0.5)
+                                .padding(.leading, 10)
+                        }
+                        .frame(width: Layout.width.rawValue)
+                        .tint(.accentColor)
+                        .padding(.top, 30)
+                        BlueDivider()
+                        
+                        renderCitySelector(city: viewModel.mainCity) {
+                            viewModel.selectedCity = .main
+                            viewModel.showCityListModal.toggle()
+                        }
+                        .padding(.top, 15)
+                        
+                        BlueDivider()
+                        
+                        Image(systemName: "arrow.down")
+                            .resizable()
+                            .frame(width: 15, height: 20)
+                            .foregroundColor(.accentColor)
+                            .padding(.vertical, 30)
+                        renderCitySelector(city: viewModel.secondCity) {
+                            viewModel.selectedCity = .second
+                            viewModel.showCityListModal.toggle()
+                        }
+                        BlueDivider()
+                        
+                    }
                 }
             }
         }
+        .sheet(isPresented: $viewModel.showCityListModal) {
+            VStack {
+                BlueBar()
+                renderCityList()
+                Spacer()
+            }
+            .presentationBackground(Color.appWhite)
+            
+        }
+        
+        
     }
     
     @ViewBuilder
@@ -99,18 +144,22 @@ struct ClockView: View {
     }
     
     @ViewBuilder
-    func renderResultDate()-> some View {
+    func renderResultDate(city: String)-> some View {
         VStack (spacing:0){
-            Text("4:00 PM, 12, Aug, 2022")
-                .font(.system(size: 30))
-                .fontWeight(.bold)
-                .foregroundColor(.accentColor)
-                .padding(.top, 20)
+            HStack {
+                Text("4:00 PM, 12, Aug, 2022")
+                    .font(.system(size: 25))
+                    .fontWeight(.bold)
+                    .foregroundColor(.accentColor)
+                    .padding(.top, 20)
+                Spacer()
+            }
+            .padding(.leading, 35)
             
             HStack {
-                Text("Osaka")
+                Text(city == "" ? "Select" : city)
                 Spacer()
-                    
+                
             }
             .foregroundColor(.appBlack)
             .padding(.leading, 35)
@@ -118,6 +167,116 @@ struct ClockView: View {
             
         }
     }
+    
+    @ViewBuilder
+    func renderCitySelector(city: String, onTap: @escaping ()-> Void)-> some View {
+        HStack {
+            Text("City")
+                .foregroundColor(.appBlack)
+                .font(.system(size: 20))
+                .fontWeight(.bold)
+                .tracking(0.5)
+                .padding(.leading, 10)
+            Spacer()
+            HStack {
+                Text(city == "" ? "Select" : city)
+                    .foregroundColor(.appBlack)
+                    .font(.system(size: 20))
+                    .fontWeight(.regular)
+                    .tracking(0.5)
+                    .padding(.leading, 10)
+                Image(systemName: "chevron.down")
+                    .resizable()
+                    .frame(width: 15, height: 10)
+                    .foregroundColor(.appGray)
+                
+                
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                onTap()
+            }
+            
+            
+        }
+        .frame(width: Layout.width.rawValue)
+    }
+    
+    @ViewBuilder
+    func renderCityList ()-> some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundColor(.accentColor)
+            
+            TextField("", text: $viewModel.citySearchValue)
+                .padding([.vertical], 10)
+                .padding([.horizontal], 5)
+            
+        }
+        .padding([.horizontal], 10)
+        .background(Color.lightGray)
+        .clipShape(Capsule())
+        .frame(width: 300)
+        .padding(.top, 10)
+        
+        
+        if viewModel.citySearchValue == "" {
+            List {
+                ForEach(alphabet, id: \.self) { letter in
+                    Section(content: {
+                        ForEach(TimeZone.allCities, id: \.self) { city in
+                            if let fisrt = city.first, fisrt == letter.first {
+                                Button(action: {
+                                    viewModel.onTapCity(value: city)
+                                }) {
+                                    Text(city)
+                                        .foregroundColor(.appBlack)
+                                        .font(Font.system(size: 17))
+                                }
+                                
+                            }
+                        }
+                        
+                    }, header: {
+                        Text(letter)
+                    })
+                    
+                }
+                .listRowBackground(Color.appWhite)
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color.appWhite)
+        } else if viewModel.doesListInclude(viewModel.citySearchValue)  {
+            List {
+                Section(content: {
+                    ForEach(TimeZone.allCities, id: \.self) { city in
+                        if city.contains(viewModel.citySearchValue) {
+                            Button(action: {
+                                viewModel.onTapCity(value: city)
+                            }) {
+                                Text(city)
+                                    .foregroundColor(.appBlack)
+                                    .font(Font.system(size: 17))
+                            }
+                        }
+                        
+                    }
+                    .listRowBackground(Color.appWhite)
+                    
+                }
+                )
+            }
+        }
+    }
+    
+    
+}
+
+enum SelectedCity {
+    case main,
+         second
 }
 
 struct ClockView_Previews: PreviewProvider {

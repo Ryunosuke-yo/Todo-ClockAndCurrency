@@ -42,7 +42,7 @@ struct LatestCurrencyResult: Codable {
 }
 
 
-enum CurrecnyAPIError: Error {
+enum APIError: Error {
     case invalidUrl
     case invalidResponse
     case decodeError
