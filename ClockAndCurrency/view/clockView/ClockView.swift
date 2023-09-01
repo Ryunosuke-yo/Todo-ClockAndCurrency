@@ -85,7 +85,7 @@ struct ClockView: View {
                         .padding(.top, 30)
                         BlueDivider()
                         
-                        renderCitySelector(city: viewModel.mainCity) {
+                        renderCitySelector(city: viewModel.mainCity == "" ? "Select" : String(viewModel.mainCity.split(separator: "/").last ?? "Unknown")) {
                             viewModel.selectedCity = .main
                             viewModel.showCityListModal.toggle()
                         }
@@ -98,23 +98,54 @@ struct ClockView: View {
                             .frame(width: 15, height: 20)
                             .foregroundColor(.accentColor)
                             .padding(.vertical, 30)
-                        renderCitySelector(city: viewModel.secondCity) {
+                        renderCitySelector(city: viewModel.secondCity == "" ? "Select" : String(viewModel.secondCity.split(separator: "/").last ?? "Unknown")) {
                             viewModel.selectedCity = .second
                             viewModel.showCityListModal.toggle()
                         }
                         BlueDivider()
-                        
+                        Button(action: {}) {
+                            Text("Convert")
+                                .font(.system(size: 15))
+                                .foregroundColor(.appWhite)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 20)
+                                .background(Color.accentColor)
+                                .cornerRadius(20)
+                        }
+                        .padding(.top, 20)
                     }
+                   
                 }
+                
+                
             }
         }
         .sheet(isPresented: $viewModel.showCityListModal) {
             VStack {
                 BlueBar()
-                renderCityList()
+                switch viewModel.loadingState {
+                case .completed:
+                    renderCityList()
+                case .loading:
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .accentColor))
+                        .padding(.top, 20)
+                case .error:
+                    Text("Network error")
+                }
+                
                 Spacer()
             }
             .presentationBackground(Color.appWhite)
+            .onAppear {
+                viewModel.loadingState = .loading
+                TimeZoneApiClient().getAllTimeZone {
+                    res in
+                    
+                    viewModel.timeZoneList = res
+                    viewModel.loadingState = .completed
+                }
+            }
             
         }
         
@@ -157,7 +188,7 @@ struct ClockView: View {
             .padding(.leading, 35)
             
             HStack {
-                Text(city == "" ? "Select" : city)
+                Text(city == "" ? "Select" : String(city.split(separator: "/").last ?? "").replacingOccurrences(of: "_", with: " "))
                 Spacer()
                 
             }
@@ -179,7 +210,7 @@ struct ClockView: View {
                 .padding(.leading, 10)
             Spacer()
             HStack {
-                Text(city == "" ? "Select" : city)
+                Text(city == "" ? "Select" : city.replacingOccurrences(of: "_", with: " "))
                     .foregroundColor(.appBlack)
                     .font(.system(size: 20))
                     .fontWeight(.regular)
@@ -226,17 +257,21 @@ struct ClockView: View {
             List {
                 ForEach(alphabet, id: \.self) { letter in
                     Section(content: {
-                        ForEach(TimeZone.allCities, id: \.self) { city in
-                            if let fisrt = city.first, fisrt == letter.first {
-                                Button(action: {
-                                    viewModel.onTapCity(value: city)
-                                }) {
-                                    Text(city)
-                                        .foregroundColor(.appBlack)
-                                        .font(Font.system(size: 17))
+                        ForEach(viewModel.timeZoneList, id: \.self) { timezone in
+                            if let city = timezone.split(separator: "/").last {
+                                if let fisrt = city.first, fisrt == letter.first {
+                                    Button(action: {
+                                        viewModel.onTapCity(value: timezone)
+                                    }) {
+                                        Text(city.replacingOccurrences(of: "_", with: " "))
+                                            .foregroundColor(.appBlack)
+                                            .font(Font.system(size: 17))
+                                    }
+                                    
                                 }
-                                
                             }
+                            
+                            
                         }
                         
                     }, header: {
@@ -251,16 +286,19 @@ struct ClockView: View {
         } else if viewModel.doesListInclude(viewModel.citySearchValue)  {
             List {
                 Section(content: {
-                    ForEach(TimeZone.allCities, id: \.self) { city in
-                        if city.contains(viewModel.citySearchValue) {
-                            Button(action: {
-                                viewModel.onTapCity(value: city)
-                            }) {
-                                Text(city)
-                                    .foregroundColor(.appBlack)
-                                    .font(Font.system(size: 17))
+                    ForEach(viewModel.timeZoneList, id: \.self) { timezone in
+                        if let city = timezone.split(separator: "/").last  {
+                            if city.contains(viewModel.citySearchValue) {
+                                Button(action: {
+                                    viewModel.onTapCity(value: timezone)
+                                }) {
+                                    Text(city.replacingOccurrences(of: "_", with: " "))
+                                        .foregroundColor(.appBlack)
+                                        .font(Font.system(size: 17))
+                                }
                             }
                         }
+
                         
                     }
                     .listRowBackground(Color.appWhite)

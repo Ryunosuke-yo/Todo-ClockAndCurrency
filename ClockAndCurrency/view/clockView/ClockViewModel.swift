@@ -19,11 +19,12 @@ extension ClockView {
         @Published var secondCity = ""
         @Published var selectedCity = SelectedCity.main
         @Published var timeZoneList = [String]()
+        @Published var loadingState = ApiLoading.completed
         
         func doesListInclude(_ value: String)-> Bool {
             var include = false
-            for city in TimeZone.allCities {
-                if city.contains(value) {
+            for city in timeZoneList {
+                if String(city.split(separator: "/").last ?? "").contains(value) {
                     include = true
                 }
                

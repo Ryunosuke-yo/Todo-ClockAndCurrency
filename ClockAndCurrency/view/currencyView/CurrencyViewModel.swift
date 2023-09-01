@@ -11,7 +11,7 @@ extension CurrencyView {
     @MainActor
     class CurrencyViewModel: ObservableObject {
         @Published var showCurrecnyListModal = false
-        @Published var isLoading = CurrecnyLoading.loading
+        @Published var isLoading = ApiLoading.loading
         @Published var currencyList = [String : String]()
         @Published var currecnySearchValue = ""
         @Published var showListResult = true

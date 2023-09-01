@@ -12,10 +12,10 @@ struct TimeZoneApiClient {
     let baseUrl = "https://timeapi.io/"
     
     
-    func getAllTimeZone(onCallComplated: @escaping ()-> Void) {
+    func getAllTimeZone(onCallComplated: @escaping ([String])-> Void) {
         let url = baseUrl + "/api/TimeZone/AvailableTimeZones"
         getResult([String].self, url: url) { result in
-            onCallComplated()
+            onCallComplated(result)
         }
     }
     

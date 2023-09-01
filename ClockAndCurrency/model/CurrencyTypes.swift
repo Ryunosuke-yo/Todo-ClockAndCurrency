@@ -48,7 +48,7 @@ enum APIError: Error {
     case decodeError
 }
 
-enum CurrecnyLoading {
+enum ApiLoading {
     case loading
     case completed
     case error
