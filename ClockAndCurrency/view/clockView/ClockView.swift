@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ClockView: View {
     @StateObject var viewModel = ClockViewModel()
+    let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     var body: some View {
         ZStack {
             Color.appWhite.ignoresSafeArea()
@@ -34,42 +35,43 @@ struct ClockView: View {
                 
                 
                 if viewModel.segmentValue == 0 {
-                    List {
-                        renderDateComponnet()
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.appWhite)
-                        renderDateComponnet()
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.appWhite)
-                        renderDateComponnet()
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.appWhite)
-                    }
-                    .scrollContentBackground(.hidden)
-                    .background(Color.appWhite)
-                    
-                    HStack {
-                        Spacer()
-                        Button(action: {}) {
-                            Image(systemName: "plus")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .padding(16)
-                                .background(Color.accentColor)
-                                .foregroundColor(.appWhite)
-                                .clipShape(Circle())
-                            
+                    TimelineView(.everyMinute) { context in
+                        List {
+                            renderDateComponnet(date: context.date)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.appWhite)
+                            renderDateComponnet(date: context.date)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.appWhite)
+                            renderDateComponnet(date: context.date)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.appWhite)
                         }
+                        .scrollContentBackground(.hidden)
+                        .background(Color.appWhite)
+                        
+                        HStack {
+                            Spacer()
+                            Button(action: {}) {
+                                Image(systemName: "plus")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .padding(16)
+                                    .background(Color.accentColor)
+                                    .foregroundColor(.appWhite)
+                                    .clipShape(Circle())
+                                
+                            }
+                        }
+                        .padding(.trailing, 30)
+                        .padding(.bottom, 60)
                     }
-                    .padding(.trailing, 30)
-                    .padding(.bottom, 60)
-                    
                     
                     
                 } else if viewModel.segmentValue == 1 {
                     ScrollView {
-                        renderResultDate(city: viewModel.mainCity)
-                        renderResultDate(city: viewModel.secondCity)
+                        renderResultDate(city: viewModel.mainCity, cityValueToDisplay: viewModel.mainCityDateTimeToDisplay)
+                        renderResultDate(city: viewModel.secondCity, cityValueToDisplay: viewModel.secondCityDateTimeToDisplay)
                         
                         
                         DatePicker(selection: $viewModel.selectedDateAndTime, displayedComponents: [.date, .hourAndMinute]) {
@@ -85,7 +87,7 @@ struct ClockView: View {
                         .padding(.top, 30)
                         BlueDivider()
                         
-                        renderCitySelector(city: viewModel.mainCity == "" ? "Select" : String(viewModel.mainCity.split(separator: "/").last ?? "Unknown")) {
+                        renderCitySelector(city: viewModel.mainCity == "" ? "Select" : viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: viewModel.mainCity)) {
                             viewModel.selectedCity = .main
                             viewModel.showCityListModal.toggle()
                         }
@@ -98,12 +100,17 @@ struct ClockView: View {
                             .frame(width: 15, height: 20)
                             .foregroundColor(.accentColor)
                             .padding(.vertical, 30)
-                        renderCitySelector(city: viewModel.secondCity == "" ? "Select" : String(viewModel.secondCity.split(separator: "/").last ?? "Unknown")) {
+                        renderCitySelector(city: viewModel.secondCity == "" ? "Select" : viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: viewModel.secondCity)) {
                             viewModel.selectedCity = .second
                             viewModel.showCityListModal.toggle()
                         }
                         BlueDivider()
-                        Button(action: {}) {
+                        Button(action: {
+                            if viewModel.mainCity == "" || viewModel.secondCity == "" {
+                                return
+                            }
+                            viewModel.convertDateTime()
+                        }) {
                             Text("Convert")
                                 .font(.system(size: 15))
                                 .foregroundColor(.appWhite)
@@ -141,7 +148,6 @@ struct ClockView: View {
                 viewModel.loadingState = .loading
                 TimeZoneApiClient().getAllTimeZone {
                     res in
-                    
                     viewModel.timeZoneList = res
                     viewModel.loadingState = .completed
                 }
@@ -153,7 +159,7 @@ struct ClockView: View {
     }
     
     @ViewBuilder
-    func renderDateComponnet()-> some View {
+    func renderDateComponnet(date: Date)-> some View {
         HStack {
             VStack(spacing:0) {
                 Text("London")
@@ -166,19 +172,22 @@ struct ClockView: View {
                 
             }
             Spacer()
-            Text("12:00 AM")
-                .font(.system(size: 35))
+            Text("\(date)")
+                .font(.system(size: 13))
                 .fontWeight(.bold)
                 .foregroundColor(.accentColor)
+                .onReceive(timer) { input in
+                    viewModel.worldClockDate = input
+                }
         }
         .frame(width: Layout.width.rawValue + 10)
     }
     
     @ViewBuilder
-    func renderResultDate(city: String)-> some View {
+    func renderResultDate(city: String, cityValueToDisplay: String)-> some View {
         VStack (spacing:0){
             HStack {
-                Text("4:00 PM, 12, Aug, 2022")
+                Text(cityValueToDisplay == "" ? "Select" : cityValueToDisplay)
                     .font(.system(size: 25))
                     .fontWeight(.bold)
                     .foregroundColor(.accentColor)
@@ -188,7 +197,7 @@ struct ClockView: View {
             .padding(.leading, 35)
             
             HStack {
-                Text(city == "" ? "Select" : String(city.split(separator: "/").last ?? "").replacingOccurrences(of: "_", with: " "))
+                Text(city == "" ? "Select" : viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: city))
                 Spacer()
                 
             }
@@ -258,17 +267,16 @@ struct ClockView: View {
                 ForEach(alphabet, id: \.self) { letter in
                     Section(content: {
                         ForEach(viewModel.timeZoneList, id: \.self) { timezone in
-                            if let city = timezone.split(separator: "/").last {
-                                if let fisrt = city.first, fisrt == letter.first {
-                                    Button(action: {
-                                        viewModel.onTapCity(value: timezone)
-                                    }) {
-                                        Text(city.replacingOccurrences(of: "_", with: " "))
-                                            .foregroundColor(.appBlack)
-                                            .font(Font.system(size: 17))
-                                    }
-                                    
+                            let city = viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: timezone)
+                            if city != "Unknown" , let fisrt = city.first, fisrt == letter.first {
+                                Button(action: {
+                                    viewModel.onTapCity(value: timezone)
+                                }) {
+                                    Text(city)
+                                        .foregroundColor(.appBlack)
+                                        .font(Font.system(size: 17))
                                 }
+
                             }
                             
                             
@@ -287,15 +295,14 @@ struct ClockView: View {
             List {
                 Section(content: {
                     ForEach(viewModel.timeZoneList, id: \.self) { timezone in
-                        if let city = timezone.split(separator: "/").last  {
-                            if city.contains(viewModel.citySearchValue) {
-                                Button(action: {
-                                    viewModel.onTapCity(value: timezone)
-                                }) {
-                                    Text(city.replacingOccurrences(of: "_", with: " "))
-                                        .foregroundColor(.appBlack)
-                                        .font(Font.system(size: 17))
-                                }
+                        let city = viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: timezone)
+                        if city != "Unknown" && city.contains(viewModel.citySearchValue) {
+                            Button(action: {
+                                viewModel.onTapCity(value: timezone)
+                            }) {
+                                Text(city)
+                                    .foregroundColor(.appBlack)
+                                    .font(Font.system(size: 17))
                             }
                         }
 
@@ -317,8 +324,8 @@ enum SelectedCity {
          second
 }
 
-struct ClockView_Previews: PreviewProvider {
-    static var previews: some View {
-        ClockView()
-    }
-}
+//struct ClockView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ClockView()
+//    }
+//}
