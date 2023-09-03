@@ -23,6 +23,7 @@ extension ClockView {
         @Published var mainCityDateTimeToDisplay = ""
         @Published var secondCityDateTimeToDisplay = ""
         @Published var worldClockDate = Date.now
+        @Published var showWorldClockLList = false
         
         func doesListInclude(_ value: String)-> Bool {
             var include = false
@@ -42,9 +43,10 @@ extension ClockView {
             } else if selectedCity == .second {
                 secondCity = value
             }
-            
             showCityListModal.toggle()
         }
+        
+       
         
         func convertDateTime()-> Void {
             let formatter = DateFormatter()
@@ -78,10 +80,86 @@ extension ClockView {
         
         func getCityNamefromTimeZone(timeZoneIdentifiers: String)-> String {
             guard let city = timeZoneIdentifiers.split(separator: "/").last else {
-                return "Unknown"
+                return TimeZone.unknown
             }
             
             return city.replacingOccurrences(of: "_", with: " ")
         }
+        
+        func getTimeWithTimeZone(identifier: String, date: Date)-> String {
+            let timeZone = TimeZone(identifier: identifier)
+            
+            let formatter = DateFormatter()
+            formatter.timeZone = timeZone
+            formatter.dateFormat = "h:mm a"
+            formatter.amSymbol = "AM"
+            formatter.pmSymbol = "PM"
+            
+            let dateString = formatter.string(from: date)
+            
+            return dateString
+        }
+        
+        func getTodayOrTommorowOrYesterday(identifier: String, date: Date)-> String {
+            guard let days = calculateDateGap(identifier: identifier, date: date) else {
+                return "Unknown"
+            }
+            
+            if  days.dayInLocal < days.dayInTimeZone {
+                return "Tomorrow"
+            } else if  days.dayInLocal > days.dayInTimeZone {
+                return "Yesterday"
+            } else if  days.dayInLocal == days.dayInTimeZone {
+                return "Today"
+            }
+           
+            
+           return "Unkonwn"
+        }
+        
+        func getTimeGap(identifier: String, date: Date)-> Int?{
+            guard let days = calculateDateGap(identifier: identifier, date: date) else {
+                return nil
+            }
+            
+          
+            
+            return days.timeGap
+        }
+        
+        
+        private func calculateDateGap(identifier: String, date: Date)-> LocalAndTimeZoneDay? {
+            guard let timeZone = TimeZone(identifier: identifier) else {
+                return nil
+            }
+            let calendar = Calendar.current
+            let dateCompInLocal = calendar.dateComponents(in: TimeZone.current, from: date)
+            let dateCompInTimeZone = calendar.dateComponents(in: timeZone, from: date)
+            let localDay = dateCompInLocal.day
+            let timeZoneDay = dateCompInTimeZone.day
+            let localHour = dateCompInLocal.hour
+            let timeZoneHour = dateCompInTimeZone.hour
+            
+            guard let dayInLocal = localDay, let dayInTimeZone = timeZoneDay, let hrInLocal = localHour, let hrInTimeZone = timeZoneHour else {
+                return nil
+            }
+            
+            var timeGap: Int
+            
+            if hrInLocal == hrInTimeZone {
+                timeGap = 0
+            } else {
+                timeGap = hrInTimeZone - hrInLocal
+            }
+            
+            return LocalAndTimeZoneDay(dayInLocal: dayInLocal, dayInTimeZone: dayInTimeZone, timeGap: timeGap)
+        }
     }
+}
+
+
+struct LocalAndTimeZoneDay {
+    let dayInLocal: Int
+    let dayInTimeZone: Int
+    let timeGap: Int
 }

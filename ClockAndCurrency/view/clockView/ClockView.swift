@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ClockView: View {
     @StateObject var viewModel = ClockViewModel()
-    let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    @FetchRequest(sortDescriptors: []) var worldClocks: FetchedResults<WorldClock>
+    @Environment(\.managedObjectContext) var moc
     var body: some View {
         ZStack {
             Color.appWhite.ignoresSafeArea()
@@ -35,39 +36,48 @@ struct ClockView: View {
                 
                 
                 if viewModel.segmentValue == 0 {
-                    TimelineView(.everyMinute) { context in
-                        List {
-                            renderDateComponnet(date: context.date)
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(Color.appWhite)
-                            renderDateComponnet(date: context.date)
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(Color.appWhite)
-                            renderDateComponnet(date: context.date)
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(Color.appWhite)
-                        }
-                        .scrollContentBackground(.hidden)
-                        .background(Color.appWhite)
-                        
-                        HStack {
-                            Spacer()
-                            Button(action: {}) {
-                                Image(systemName: "plus")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .padding(16)
-                                    .background(Color.accentColor)
-                                    .foregroundColor(.appWhite)
-                                    .clipShape(Circle())
-                                
+                    ZStack {
+                        TimelineView(.everyMinute) { context in
+                            if worldClocks.count != 0 {
+                                List {
+                                    ForEach(worldClocks, id: \.self) { worldClock in
+                                        if let identifier = worldClock.identifier {
+                                            renderDateComponnet(identifier: identifier)
+                                                .listRowSeparator(.hidden)
+                                                .listRowBackground(Color.appWhite)
+                                        }
+
+                                    }
+                                    .onDelete(perform: deleteWorldClock)
+
+                                }
+                                .scrollContentBackground(.hidden)
+                                .background(Color.appWhite)
                             }
+
+                            Spacer()
                         }
-                        .padding(.trailing, 30)
-                        .padding(.bottom, 60)
+                        VStack {
+                            Spacer()
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    viewModel.showWorldClockLList.toggle()
+                                }) {
+                                    Image(systemName: "plus")
+                                        .resizable()
+                                        .frame(width: 20, height: 20)
+                                        .padding(16)
+                                        .background(Color.accentColor)
+                                        .foregroundColor(.appWhite)
+                                        .clipShape(Circle())
+                                    
+                                }
+                            }
+                            .padding(.trailing, 30)
+                            .padding(.bottom, 60)
+                        }
                     }
-                    
-                    
                 } else if viewModel.segmentValue == 1 {
                     ScrollView {
                         renderResultDate(city: viewModel.mainCity, cityValueToDisplay: viewModel.mainCityDateTimeToDisplay)
@@ -145,6 +155,7 @@ struct ClockView: View {
             }
             .presentationBackground(Color.appWhite)
             .onAppear {
+                viewModel.citySearchValue = ""
                 viewModel.loadingState = .loading
                 TimeZoneApiClient().getAllTimeZone {
                     res in
@@ -153,32 +164,45 @@ struct ClockView: View {
                 }
             }
             
+            
+        }
+        .sheet(isPresented: $viewModel.showWorldClockLList) {
+            VStack {
+                BlueBar()
+                renderWorldClockList()
+                    .presentationBackground(Color.appWhite)
+            }
+            .onAppear {
+                viewModel.citySearchValue = ""
+            }
+            
         }
         
         
     }
     
+    
+    
     @ViewBuilder
-    func renderDateComponnet(date: Date)-> some View {
+    func renderDateComponnet(identifier: String)-> some View {
         HStack {
-            VStack(spacing:0) {
-                Text("London")
+            let gap = viewModel.getTimeGap(identifier: identifier, date: Date.now)
+            let plusOrNot = gap ?? 0 > 0 ? "+" : ""
+            VStack(alignment: .leading, spacing:0) {
+                Text(viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: identifier))
                     .font(.system(size: 25))
                     .fontWeight(.bold)
                     .foregroundColor(.appBlack)
-                Text("Today, +2hrs")
+                Text("\(viewModel.getTodayOrTommorowOrYesterday(identifier: identifier, date: Date.now)), \(plusOrNot)\(gap ?? 0)hrs")
                     .foregroundColor(.appBlack)
                     .padding([.top], 5)
                 
             }
             Spacer()
-            Text("\(date)")
-                .font(.system(size: 13))
+            Text(viewModel.getTimeWithTimeZone(identifier: identifier, date: Date.now))
+                .font(.system(size: 35))
                 .fontWeight(.bold)
                 .foregroundColor(.accentColor)
-                .onReceive(timer) { input in
-                    viewModel.worldClockDate = input
-                }
         }
         .frame(width: Layout.width.rawValue + 10)
     }
@@ -244,31 +268,17 @@ struct ClockView: View {
     
     @ViewBuilder
     func renderCityList ()-> some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .resizable()
-                .frame(width: 20, height: 20)
-                .foregroundColor(.accentColor)
-            
-            TextField("", text: $viewModel.citySearchValue)
-                .padding([.vertical], 10)
-                .padding([.horizontal], 5)
-            
-        }
-        .padding([.horizontal], 10)
-        .background(Color.lightGray)
-        .clipShape(Capsule())
+        SearchBar(text: $viewModel.citySearchValue)
         .frame(width: 300)
         .padding(.top, 10)
         
-        
-        if viewModel.citySearchValue == "" {
-            List {
-                ForEach(alphabet, id: \.self) { letter in
-                    Section(content: {
-                        ForEach(viewModel.timeZoneList, id: \.self) { timezone in
-                            let city = viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: timezone)
-                            if city != "Unknown" , let fisrt = city.first, fisrt == letter.first {
+        List {
+            ForEach(alphabet, id: \.self) { letter in
+                Section(content: {
+                    ForEach(viewModel.timeZoneList, id: \.self) { timezone in
+                        let city = viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: timezone)
+                        if city != TimeZone.unknown , let fisrt = city.first, fisrt == letter.first {
+                            if viewModel.citySearchValue == "" {
                                 Button(action: {
                                     viewModel.onTapCity(value: timezone)
                                 }) {
@@ -276,48 +286,98 @@ struct ClockView: View {
                                         .foregroundColor(.appBlack)
                                         .font(Font.system(size: 17))
                                 }
-
+                            } else if city.lowercased().contains(viewModel.citySearchValue.lowercased()) {
+                                Button(action: {
+                                    viewModel.onTapCity(value: timezone)
+                                }) {
+                                    Text(city)
+                                        .foregroundColor(.appBlack)
+                                        .font(Font.system(size: 17))
+                                }
                             }
                             
-                            
                         }
-                        
-                    }, header: {
-                        Text(letter)
-                    })
+                    }
                     
-                }
-                .listRowBackground(Color.appWhite)
+                }, header: {
+                    Text(letter)
+                })
+                
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.appWhite)
-        } else if viewModel.doesListInclude(viewModel.citySearchValue)  {
-            List {
+            .listRowBackground(Color.appWhite)
+        }
+        .scrollContentBackground(.hidden)
+        .background(Color.appWhite)
+    }
+    
+    @ViewBuilder
+    func renderWorldClockList()-> some View {
+        SearchBar(text: $viewModel.citySearchValue)
+        .frame(width: 300)
+        .padding(.top, 10)
+        List {
+            ForEach(alphabet, id: \.self) { letter in
                 Section(content: {
-                    ForEach(viewModel.timeZoneList, id: \.self) { timezone in
+                    ForEach(TimeZone.allTimeZonesIdentifiers, id: \.self) { timezone in
                         let city = viewModel.getCityNamefromTimeZone(timeZoneIdentifiers: timezone)
-                        if city != "Unknown" && city.contains(viewModel.citySearchValue) {
-                            Button(action: {
-                                viewModel.onTapCity(value: timezone)
-                            }) {
-                                Text(city)
-                                    .foregroundColor(.appBlack)
-                                    .font(Font.system(size: 17))
+                        if let fisrt = city.first, fisrt == letter.first {
+                            if viewModel.citySearchValue == "" {
+                                Button(action: {
+                                    onTapCityonWorldClockLits(value: timezone)
+                                }) {
+                                    Text(city)
+                                        .foregroundColor(.appBlack)
+                                        .font(Font.system(size: 17))
+                                }
+                            } else if city.lowercased().contains(viewModel.citySearchValue.lowercased()) {
+                                Button(action: {
+                                    onTapCityonWorldClockLits(value: timezone)
+                                }) {
+                                    Text(city)
+                                        .foregroundColor(.appBlack)
+                                        .font(Font.system(size: 17))
+                                }
                             }
+                            
                         }
-
                         
                     }
-                    .listRowBackground(Color.appWhite)
-                    
-                }
-                )
+                }, header: {
+                    Text(letter)
+                })
             }
+            .listRowBackground(Color.appWhite)
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.appWhite)
+    }
+    
+    
+    func onTapCityonWorldClockLits(value: String)-> Void {
+        let newWorldClock = WorldClock(context: moc)
+        newWorldClock.identifier = value
+        newWorldClock.id = UUID()
+        
+        PersistenceController.shared.save()
+        viewModel.showWorldClockLList.toggle()
+        
+    }
+    
+    func deleteWorldClock(indexSet: IndexSet)-> Void {
+        for index in indexSet {
+            let clockToDelete = worldClocks[index]
+            moc.delete(clockToDelete)
+        }
+        
+        PersistenceController.shared.save()
+        
+        
     }
     
     
 }
+
+
 
 enum SelectedCity {
     case main,

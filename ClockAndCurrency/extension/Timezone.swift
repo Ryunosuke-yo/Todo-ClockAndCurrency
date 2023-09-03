@@ -12,4 +12,5 @@ extension TimeZone {
     static let allCities = allTimeZonesIdentifiers.compactMap {
         identifier in identifier.split(separator: "/").last?.replacingOccurrences(of: "_", with: " ")
     }
+    static let unknown = "Unknown"
 }

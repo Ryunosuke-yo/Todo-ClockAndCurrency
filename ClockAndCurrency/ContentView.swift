@@ -60,6 +60,26 @@ struct BlueBar: View {
     }
 }
 
+struct SearchBar: View {
+    var text: Binding <String>
+    var body: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundColor(.accentColor)
+            
+            TextField("", text: text)
+                .padding([.vertical], 10)
+                .padding([.horizontal], 5)
+            
+        }
+        .padding([.horizontal], 10)
+        .background(Color.lightGray)
+        .clipShape(Capsule())
+    }
+}
+
 
 
 

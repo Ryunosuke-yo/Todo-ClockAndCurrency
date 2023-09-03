@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="CurrencyData" representedClassName="CurrencyData" syncable="YES" codeGenerationType="class">
-        <attribute name="mainCurrecny" optional="YES" attributeType="String"/>
-        <attribute name="secondCurrency" optional="YES" attributeType="String"/>
-    </entity>
     <entity name="Todos" representedClassName="Todos" syncable="YES" codeGenerationType="class">
         <attribute name="assignedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="completed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -12,5 +8,9 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="todoValue" optional="YES" attributeType="String"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="WorldClock" representedClassName="WorldClock" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
     </entity>
 </model>

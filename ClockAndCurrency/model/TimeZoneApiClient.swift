@@ -27,9 +27,15 @@ struct TimeZoneApiClient {
             "toTimeZone": to,
             "dstAmbiguity": ""
         ]
-        print(dateTime)
         
-        AF.request(url, method: .post, parameters: params, encoding: JSONEncoding.default).responseDecodable(of: ConversionApiResult.self) {
+        postJson(url: url, params: params, jsonType: ConversionApiResult.self) {
+            res in
+            onCallCapmplted(res)
+        }
+    }
+    
+    func postJson<T: Decodable>(url: String, params: Parameters, jsonType: T.Type, onCallCapmplted: @escaping (T)-> Void)-> Void {
+        AF.request(url, method: .post, parameters: params, encoding: JSONEncoding.default).responseDecodable(of: T.self) {
             res in
             switch res.result {
             case .success(let data):
