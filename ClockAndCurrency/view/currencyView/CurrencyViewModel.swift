@@ -12,10 +12,11 @@ extension CurrencyView {
     class CurrencyViewModel: ObservableObject {
         @Published var showCurrecnyListModal = false
         @Published var isLoading = ApiLoading.loading
-        @Published var currencyList = [String : String]()
+        @Published var currencyList = [String : EachCurrencyInList]()
         @Published var currecnySearchValue = ""
         @Published var showListResult = true
         @Published var selectedValue = SelectedValue.main
+        @Published var currentRate: Double = 0
       
         
         

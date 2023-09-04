@@ -6,132 +6,66 @@
 //
 
 import Foundation
-
+import Alamofire
 
 class CurrencyAPIClinet {
     static let shared = CurrencyAPIClinet()
     
-    private let baseURL = URL(string: "http://api.exchangeratesapi.io")
+    private let baseURL = "https://free.currconv.com"
     
-    private let apiKeyQuery = URLQueryItem(name: "access_key", value: CurrecnyApiKey)
-    
-    
-    func getCurrencyList () async throws -> CurrecnyList {
-        guard let baseUrl = baseURL else {
-            print("Error on list ")
-            throw APIError.invalidUrl
-        }
-        
-        guard var urlComponemts = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
-            print("Error on getCurrencyList_ url")
-            throw APIError.invalidUrl
-        }
-        let params = [
-            apiKeyQuery,
-        ]
-        urlComponemts.path = "/v1/symbols"
-        urlComponemts.queryItems = params
-        
-        guard let finalUrl = urlComponemts.url else {
-            print("Error on getCurrencyList_ final url")
-            throw APIError.invalidUrl
-        }
-        
-        
-        
-        let list = try await getResult(CurrecnyList.self, finalUrl: finalUrl)
-        
-        return list
-        
-        
-    }
-    
-    
-    func convertCurrency (from: String, to: String, amount: String) async throws  -> ConvertResult {
-        guard let baseUrl = baseURL else {
-            print("Error on convertCurrecny base url")
-            throw APIError.invalidUrl
-        }
-        
-        guard var urlComponemts = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
-            print("Error on convertCurrecny url")
-            throw APIError.invalidUrl
-        }
-        
-        let convertQuery = [
-            apiKeyQuery,
-            URLQueryItem(name: "from", value: from),
-            URLQueryItem(name: "to", value: to),
-            URLQueryItem(name: "amount", value: amount),
-        ]
-        urlComponemts.path = "/convert"
-        urlComponemts.queryItems = convertQuery
-        
-        guard let finalUrl = urlComponemts.url else {
-            print("Error on convert_ final url")
-            throw APIError.invalidUrl
-        }
-        let res = try await getResult(ConvertResult.self, finalUrl: finalUrl)
+    private let apiKeyParams = [
+        "apiKey" : currecnyApiKey
+    ]
 
-        return res
-        
-    }
     
-    func getResult<Result: Codable> (_ t: Result.Type, finalUrl:URL) async throws -> Result {
-        let (data, response) = try await URLSession.shared.data(from: finalUrl)
-        print(response, "result")
-        print(data)
-        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
+    
+    func getCurrencyList (onCallCompleted: @escaping (CurrecnyList)-> Void, onError: @escaping (AFError)-> Void) -> Void {
+        let url = baseURL + "/api/v7/currencies"
         
-        do {
-            let decoder = JSONDecoder()
-            let result = try decoder.decode(Result.self, from: data)
+        AF.request(url, parameters: apiKeyParams)
+            .responseDecodable(of: CurrecnyList.self) {
+            res in
 
-            return result
-        } catch {
-            print(error.localizedDescription)
-            throw APIError.decodeError
+            switch res.result {
+            case .success(let res) :
+                onCallCompleted(res)
+            case .failure(let error):
+                onError(error)
+                print(error)
+            }
         }
+        
+    
     }
     
-    func getLatestRate(base: String, symbols: [String]) async throws -> LatestCurrencyResult {
-        guard let baseUrl = baseURL else {
-            print("Error on latest url")
-            throw APIError.invalidUrl
-        }
-        
-        guard var urlComponemts = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
-            print("Error on latest url")
-            throw APIError.invalidUrl
-        }
-        var symbolsValue: String = ""
-        
-        for symbol in symbols {
-            symbolsValue += "\(symbol),"
-        }
-        
-        
-        let params = [
-            apiKeyQuery,
-            URLQueryItem(name: "base", value: base),
-            URLQueryItem(name: "symbols", value: symbolsValue)
+    
+    func getCurrentcyRate (from: String, to: String, onCallCompleted: @escaping (([String: Double]) -> Void), onError: @escaping (AFError)-> Void) -> Void {
+        let url = baseURL + "/api/v7/convert"
+        var rateParameters = [
+            "q" : "\(from)_\(to)",
+            "compact" : "ultra",
         ]
         
-        
-        urlComponemts.path = "/v1/latest"
-        urlComponemts.queryItems = params
-        
-        
-        guard let finalUrl = urlComponemts.url else {
-            print("Error on latest_ final url")
-            throw APIError.invalidUrl
+        rateParameters.merge(apiKeyParams) {
+            (current, _) in
+            current
         }
-        let res = try await getResult(LatestCurrencyResult.self, finalUrl: finalUrl)
-        print(res)
-        return res
         
+        AF.request(url, parameters: rateParameters).responseDecodable(of: [String: Double].self) {
+            res in
+            switch res.result {
+            case .success(let res):
+                onCallCompleted(res)
+            case .failure(let error):
+                onError(error)
+                print(error.localizedDescription)
+            }
+        }
+        
+    }
+    
+    func convertCurrency(amount: Double, rate: Double)-> Double {
+        amount * rate
     }
 }
 

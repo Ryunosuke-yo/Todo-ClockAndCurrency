@@ -30,6 +30,7 @@
 		2BC5FEB42A96B7F300EAA038 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5FEB32A96B7F300EAA038 /* ClockView.swift */; };
 		2BC5FEB62A96B8A600EAA038 /* CurrencyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5FEB52A96B8A600EAA038 /* CurrencyViewModel.swift */; };
 		2BC5FEB82A96B8F200EAA038 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC5FEB72A96B8F200EAA038 /* Layout.swift */; };
+		2BD202082AA53A46009CAFF5 /* Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD202072AA53A46009CAFF5 /* Loading.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		2BC5FEB32A96B7F300EAA038 /* ClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
 		2BC5FEB52A96B8A600EAA038 /* CurrencyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyViewModel.swift; sourceTree = "<group>"; };
 		2BC5FEB72A96B8F200EAA038 /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
+		2BD202072AA53A46009CAFF5 /* Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Loading.swift; sourceTree = "<group>"; };
 		2BEAA1FC2A983F59002B2854 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -148,6 +150,7 @@
 			children = (
 				2BB5AB382A94714400869B94 /* todoMode.swift */,
 				2BC5FEB72A96B8F200EAA038 /* Layout.swift */,
+				2BD202072AA53A46009CAFF5 /* Loading.swift */,
 			);
 			path = enum;
 			sourceTree = "<group>";
@@ -261,6 +264,7 @@
 				2BC5FEB62A96B8A600EAA038 /* CurrencyViewModel.swift in Sources */,
 				2B892C232AA04E1B009A7FB2 /* Timezone.swift in Sources */,
 				2BC5FEB12A96B75E00EAA038 /* CurrencyView.swift in Sources */,
+				2BD202082AA53A46009CAFF5 /* Loading.swift in Sources */,
 				2B33F9202A93F2BD00F7C846 /* Persistence.swift in Sources */,
 				2BA049AC2A9976BF000EE2D1 /* Keys.swift in Sources */,
 				2B7F487C2A9F20D400BE9C62 /* ClockViewModel.swift in Sources */,

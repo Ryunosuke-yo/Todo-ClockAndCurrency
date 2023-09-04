@@ -34,7 +34,7 @@ struct TimeZoneApiClient {
         }
     }
     
-    func postJson<T: Decodable>(url: String, params: Parameters, jsonType: T.Type, onCallCapmplted: @escaping (T)-> Void)-> Void {
+    private func postJson<T: Decodable>(url: String, params: Parameters, jsonType: T.Type, onCallCapmplted: @escaping (T)-> Void)-> Void {
         AF.request(url, method: .post, parameters: params, encoding: JSONEncoding.default).responseDecodable(of: T.self) {
             res in
             switch res.result {
@@ -47,7 +47,7 @@ struct TimeZoneApiClient {
         }
     }
     
-    func getResult<T:Decodable>(_ type: T.Type, url:String, onCallCompleted: @escaping (T)-> Void)-> Void {
+    private func getResult<T:Decodable>(_ type: T.Type, url:String, onCallCompleted: @escaping (T)-> Void)-> Void {
         AF.request(url).response { response in
             guard let res = response.response, let data = response.data else {
                 return

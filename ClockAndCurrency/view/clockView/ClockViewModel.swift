@@ -146,11 +146,17 @@ extension ClockView {
             
             var timeGap: Int
             
-            if hrInLocal == hrInTimeZone {
-                timeGap = 0
+             if dayInLocal < dayInTimeZone && hrInLocal > hrInTimeZone {
+                 let gap = hrInLocal - hrInTimeZone
+                 
+                 timeGap = 24 - gap
             } else {
                 timeGap = hrInTimeZone - hrInLocal
             }
+            
+            
+            
+          
             
             return LocalAndTimeZoneDay(dayInLocal: dayInLocal, dayInTimeZone: dayInTimeZone, timeGap: timeGap)
         }

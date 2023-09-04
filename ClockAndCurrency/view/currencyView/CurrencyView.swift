@@ -24,7 +24,7 @@ struct CurrencyView: View {
     @AppStorage("secondCurrecnyValue") private var secondCurrencyValue = ""
     
     
- 
+    
     
     let data = [
         dummyData(currencyValue: 2.3, day: 1),
@@ -51,9 +51,6 @@ struct CurrencyView: View {
                 .frame(width: Layout.width.rawValue)
                 .padding([.top], 10)
                 
-                Rectangle()
-                    .fill(Color.accentColor)
-                    .frame(height: 1)
                 ScrollView {
                     // adjust scroll bar when keyboard is shown
                     HStack {
@@ -61,7 +58,7 @@ struct CurrencyView: View {
                             Text("1 \(mainCurrency)")
                                 .foregroundColor(.appGray)
                             Spacer()
-                            Text("100 \(secondCurrency)")
+                            Text("\(String(format: "%.2f", viewModel.currentRate)) \(secondCurrency)")
                                 .foregroundColor(.appBlack)
                                 .font(.system(size: 23))
                                 .fontWeight(.bold)
@@ -96,29 +93,49 @@ struct CurrencyView: View {
                         AxisMarks()
                     }
                     
-                    renderCurrencyInput(currecny: mainCurrency, value: $mainCurrencyValue) {
-                        viewModel.selectedValue = .main
-                        viewModel.showCurrecnyListModal = true
-                    }
+                    renderCurrencyInput(currecny: mainCurrency, value: $mainCurrencyValue, currentValueFocus: .main)
                     BlueDivider()
                     Image(systemName: "arrow.up.arrow.down")
                         .resizable()
                         .frame(width: 20, height: 18)
                         .foregroundColor(.appGray)
                         .padding([.top])
-                    renderCurrencyInput(currecny: secondCurrency, value: $secondCurrencyValue) {
-                        viewModel.selectedValue = .second
-                        viewModel.showCurrecnyListModal = true
-                    }
+                    renderCurrencyInput(currecny: secondCurrency, value: $secondCurrencyValue, currentValueFocus: .second)
                     BlueDivider()
                 }
             }
+        }
+        .onAppear {
+            if mainCurrency == "" || secondCurrency == "" {
+                return
+            }
+            
+            CurrencyAPIClinet.shared.getCurrentcyRate(from: mainCurrency, to: secondCurrency, onCallCompleted: { res in
+                guard let firstKey = res.keys.first, let value = res[firstKey] else {
+                    return
+                }
+                viewModel.currentRate = value
+            }, onError: { afError in })
         }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
                 Button("Done") {
                     showKeyboard.toggle()
+                    if viewModel.selectedValue == .main {
+                        guard let mainValueInDouble = Double(mainCurrencyValue) else {
+                            return
+                        }
+                        let valueInDouble = CurrencyAPIClinet.shared.convertCurrency(amount: mainValueInDouble, rate: viewModel.currentRate)
+                        secondCurrencyValue = String(format: "%.3f", valueInDouble)
+                    } else {
+                        guard let secondValueInDouble = Double(secondCurrencyValue) else {
+                            return
+                        }
+                        let valueInDouble = CurrencyAPIClinet.shared.convertCurrency(amount: secondValueInDouble, rate: viewModel.currentRate)
+                        mainCurrencyValue = String(format: "%.3f", valueInDouble)
+                    }
+                    
                 }
             }
             
@@ -153,26 +170,20 @@ struct CurrencyView: View {
             .onDisappear {
                 viewModel.currecnySearchValue = ""
             }
-            .task {
-                do {
-                    viewModel.isLoading = .loading
-                    let list = try await CurrencyAPIClinet.shared.getCurrencyList()
-                    viewModel.currencyList = list.symbols
-                    viewModel.isLoading = .completed
-                    
-                } catch APIError.invalidUrl {
-                    print("invalid url")
-                    viewModel.isLoading = .error
-                } catch APIError.decodeError {
-                    print("decode")
-                    viewModel.isLoading = .error
-                } catch APIError.invalidResponse {
-                    print("respnse")
-                    viewModel.isLoading = .error
-                } catch {
-                    print("unexpexted")
-                    viewModel.isLoading = .error
+            .onAppear {
+                if viewModel.currencyList.count != 0 {
+                    // prevent daily free limit on the currency list end point
+                    return
                 }
+                viewModel.isLoading = .loading
+                CurrencyAPIClinet.shared.getCurrencyList(onCallCompleted: {
+                    res in
+                    viewModel.currencyList = res.results
+                    viewModel.isLoading = .completed
+                }, onError: {
+                    afError in
+                    viewModel.isLoading = .error
+                })
                 
             }
             
@@ -181,16 +192,13 @@ struct CurrencyView: View {
     
     
     @ViewBuilder
-    func renderCurrencyInput(currecny: String, value: Binding<String>, onTapCurrecny: @escaping ()-> Void)-> some View {
+    func renderCurrencyInput(currecny: String, value: Binding<String>, currentValueFocus: SelectedValue) -> some View {
         HStack {
             HStack {
                 Text(currecny == "" ? "Select" : currecny)
                     .foregroundColor(.appBlack)
                     .font(.system(size: 23))
                     .fontWeight(.bold)
-                    .onTapGesture {
-                        onTapCurrecny()
-                    }
                     .padding(.leading, 10)
                 
                 Image(systemName: "chevron.down")
@@ -201,24 +209,33 @@ struct CurrencyView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
+                if currentValueFocus == .main {
+                    viewModel.selectedValue = .main
+                } else {
+                    viewModel.selectedValue = .second
+                }
                 viewModel.showCurrecnyListModal = true
             }
             
             Spacer()
             
-           
-                Text("$")
-                    .foregroundColor(.appGray)
-                    .font(.system(size: 23))
-                    .fontWeight(.bold)
-                
-                TextField("00000", text: value)
-                    .frame(width: 100)
-                    .foregroundColor(.appBlack)
-                    .font(.system(size: 23))
-                    .fontWeight(.bold)
-                    .keyboardType(.decimalPad)
-                    .focused($showKeyboard)
+            TextField("00000", text: value, onEditingChanged: {
+                focused in
+                if !focused {return}
+                    
+                if currentValueFocus == .main {
+                    viewModel.selectedValue = .main
+                } else {
+                    viewModel.selectedValue = .second
+                }
+            } )
+                .frame(width: 150)
+                .foregroundColor(.appBlack)
+                .font(.system(size: 23))
+                .fontWeight(.bold)
+                .keyboardType(.decimalPad)
+                .focused($showKeyboard)
+                .multilineTextAlignment(.trailing)
             
         }
         .frame(width: Layout.width.rawValue)
@@ -253,9 +270,7 @@ struct CurrencyView: View {
                         ForEach(Array(viewModel.currencyList.keys), id: \.self) { currecny in
                             if let fisrt = currecny.first, fisrt == letter.first {
                                 Button(action: {
-                                    Task {
-                                        try await onTapCurrecnyOnList(currency: currecny)
-                                    }
+                                        onTapCurrecnyOnList(currency: currecny)
                                 }) {
                                     Text(currecny)
                                         .foregroundColor(.appBlack)
@@ -280,12 +295,7 @@ struct CurrencyView: View {
                     ForEach(Array(viewModel.currencyList.keys), id: \.self) { currecny in
                         if currecny.contains(viewModel.currecnySearchValue.uppercased()) {
                             Button(action: {
-                                Task {
-                                    try await onTapCurrecnyOnList(currency: currecny)
-                                    
-                                }
-                                
-                                
+                                onTapCurrecnyOnList(currency: currecny)
                             }) {
                                 Text(currecny)
                                     .foregroundColor(.appBlack)
@@ -306,15 +316,37 @@ struct CurrencyView: View {
     }
     
     
-    func onTapCurrecnyOnList(currency: String) async throws -> Void {
+    func onTapCurrecnyOnList(currency: String) -> Void {
         if viewModel.selectedValue == .main {
             mainCurrency = currency
         } else {
             secondCurrency = currency
         }
         viewModel.showCurrecnyListModal = false
-        let res = try await CurrencyAPIClinet.shared.getLatestRate(base: mainCurrency, symbols: [secondCurrency])
-     
+        CurrencyAPIClinet.shared.getCurrentcyRate(from: mainCurrency, to: secondCurrency, onCallCompleted: { res in
+            guard let firstKey = res.keys.first, let value = res[firstKey] else {
+                return
+            }
+            viewModel.currentRate = value
+            converCurrenyBasedOnSelectedValue()
+        }, onError: { afError in })
+         
+    }
+    
+    func converCurrenyBasedOnSelectedValue ()-> Void {
+        if viewModel.selectedValue == .main {
+            guard let mainValueInDouble = Double(mainCurrencyValue) else {
+                return
+            }
+            let valueInDouble = CurrencyAPIClinet.shared.convertCurrency(amount: mainValueInDouble, rate: viewModel.currentRate)
+            secondCurrencyValue = String(format: "%.3f", valueInDouble)
+        } else {
+            guard let secondValueInDouble = Double(secondCurrencyValue) else {
+                return
+            }
+            let valueInDouble = CurrencyAPIClinet.shared.convertCurrency(amount: secondValueInDouble, rate: viewModel.currentRate)
+            mainCurrencyValue = String(format: "%.3f", valueInDouble)
+        }
     }
 }
 
