@@ -1,1 +1,1 @@
-For supoort, email me - appearfill46@live.jp
+For app supoort, email me - appearfill46@live.jp
