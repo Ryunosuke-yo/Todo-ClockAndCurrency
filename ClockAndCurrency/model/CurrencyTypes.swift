@@ -8,13 +8,28 @@
 import Foundation
 
 struct CurrecnyList: Codable {
-    let results : [String : EachCurrencyInList]
+    let data : [String : EachCurrencyInList]
 }
 
 
 struct EachCurrencyInList : Codable {
-    let currencyName: String
-    let currencySymbol: String?
-    let id: String
+    let symbol: String
+    let name: String
+    let symbol_native: String
+    let decimal_digits: Int
+    let rounding: Int
+    let code: String
+    let name_plural: String
 }
+
+struct HistoricalRateResult: Codable {
+    let data: [String: [String : Double]]
+}
+
+struct CurrencyRateResult: Codable {
+    let meta: [String: String]?
+    let data : [String: Double]
+}
+
+
 

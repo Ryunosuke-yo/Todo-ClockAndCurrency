@@ -17,7 +17,8 @@ extension CurrencyView {
         @Published var showListResult = true
         @Published var selectedValue = SelectedValue.main
         @Published var currentRate: Double = 0
-      
+
+       
         
         
         func doesListInclude(_ charactor: String)-> Bool {
@@ -30,8 +31,14 @@ extension CurrencyView {
             }
             return inc
         }
+        
+      
+        
+       
     }
 }
+
+
 
 
 enum SelectedValue {

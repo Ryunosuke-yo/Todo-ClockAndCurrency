@@ -53,7 +53,6 @@ struct TimeZoneApiClient {
                 return
             }
             if res.statusCode != 200  {
-                print(res.description)
                 return
             }
             
@@ -63,7 +62,7 @@ struct TimeZoneApiClient {
                 
                 onCallCompleted(decoded)
             } catch {
-                print(res.description,"decode error")
+                print(res,"decode error")
                 
             }
             

@@ -12,17 +12,22 @@ class CurrencyAPIClinet {
     static let shared = CurrencyAPIClinet()
     
     private let baseURL = "https://free.currconv.com"
+    private let freeCurrencyBaseUrl = "https://api.freecurrencyapi.com/v1/"
     
     private let apiKeyParams = [
         "apiKey" : currecnyApiKey
+    ]
+    
+    private let freeCurrencyApiKeyParam = [
+        "apikey" : freeCurrencyApikey
     ]
 
     
     
     func getCurrencyList (onCallCompleted: @escaping (CurrecnyList)-> Void, onError: @escaping (AFError)-> Void) -> Void {
-        let url = baseURL + "/api/v7/currencies"
+        let url = freeCurrencyBaseUrl + "currencies"
         
-        AF.request(url, parameters: apiKeyParams)
+        AF.request(url, parameters: freeCurrencyApiKeyParam)
             .responseDecodable(of: CurrecnyList.self) {
             res in
 
@@ -39,19 +44,19 @@ class CurrencyAPIClinet {
     }
     
     
-    func getCurrentcyRate (from: String, to: String, onCallCompleted: @escaping (([String: Double]) -> Void), onError: @escaping (AFError)-> Void) -> Void {
-        let url = baseURL + "/api/v7/convert"
+    func getCurrentcyRate (from: String, to: String, onCallCompleted: @escaping ((CurrencyRateResult) -> Void), onError: @escaping (AFError)-> Void) -> Void {
+        let url = freeCurrencyBaseUrl + "latest"
         var rateParameters = [
-            "q" : "\(from)_\(to)",
-            "compact" : "ultra",
+            "base_currency" : from,
+            "currencies" : to,
         ]
         
-        rateParameters.merge(apiKeyParams) {
+        rateParameters.merge(freeCurrencyApiKeyParam) {
             (current, _) in
             current
         }
         
-        AF.request(url, parameters: rateParameters).responseDecodable(of: [String: Double].self) {
+        AF.request(url, parameters: rateParameters).responseDecodable(of: CurrencyRateResult.self) {
             res in
             switch res.result {
             case .success(let res):
@@ -67,6 +72,8 @@ class CurrencyAPIClinet {
     func convertCurrency(amount: Double, rate: Double)-> Double {
         amount * rate
     }
+    
+  
 }
 
 

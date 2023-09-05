@@ -17,7 +17,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             if suc {
                 UNUserNotificationCenter.current().delegate = self
             } else if let error = error {
-                print(error.localizedDescription)
+                print(error)
             }
         }
         return true

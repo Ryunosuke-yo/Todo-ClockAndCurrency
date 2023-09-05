@@ -65,7 +65,6 @@ extension ClockView {
                 outputDateFromatter.dateFormat = "h:mm a, dd, MMM, yyyy"
                 let mainCityOutput = outputDateFromatter.string(from: self.selectedDateAndTime)
                 let secondCityOutput = outputDateFromatter.string(from: date)
-                print(mainCityOutput)
                 self.mainCityDateTimeToDisplay = mainCityOutput
                 self.secondCityDateTimeToDisplay = secondCityOutput
             }
