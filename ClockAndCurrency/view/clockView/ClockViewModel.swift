@@ -62,7 +62,7 @@ extension ClockView {
                 
                 let outputDateFromatter = DateFormatter()
                 outputDateFromatter.locale = Locale(identifier: Locale.current.identifier)
-                outputDateFromatter.dateFormat = "h:mm a, dd, MMM, yyyy"
+                outputDateFromatter.dateFormat = "h:mm a, dd MMM, yyyy"
                 let mainCityOutput = outputDateFromatter.string(from: self.selectedDateAndTime)
                 let secondCityOutput = outputDateFromatter.string(from: date)
                 self.mainCityDateTimeToDisplay = mainCityOutput
@@ -152,11 +152,7 @@ extension ClockView {
             } else {
                 timeGap = hrInTimeZone - hrInLocal
             }
-            
-            
-            
-          
-            
+
             return LocalAndTimeZoneDay(dayInLocal: dayInLocal, dayInTimeZone: dayInTimeZone, timeGap: timeGap)
         }
     }

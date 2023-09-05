@@ -82,9 +82,6 @@ struct CurrencyView: View {
                 return
             }
             
-
-           
-            
             CurrencyAPIClinet.shared.getCurrentcyRate(from: mainCurrency, to: secondCurrency, onCallCompleted: { res in
                 guard let firstKey = res.data.keys.first, let value = res.data[firstKey] else {
                     return
