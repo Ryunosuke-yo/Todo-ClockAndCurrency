@@ -44,10 +44,10 @@ struct CurrencyView: View {
                 
                 HStack {
                     HStack {
-                        Text("1 \(mainCurrency)")
+                        Text("1 \(viewModel.selectedValue == .main ? viewModel.defaultCurrencyValueOrCurrecny(currency: mainCurrency)  : viewModel.defaultCurrencyValueOrCurrecny(currency: secondCurrency))")
                             .foregroundColor(.appGray)
                         Spacer()
-                        Text("\(String(format: "%.2f", viewModel.currentRate)) \(secondCurrency)")
+                        Text("\(String(format: "%.2f", viewModel.currentRate)) \(viewModel.selectedValue == .main ? viewModel.defaultCurrencyValueOrCurrecny(currency: secondCurrency) : viewModel.defaultCurrencyValueOrCurrecny(currency: mainCurrency))")
                             .foregroundColor(.appBlack)
                             .font(.system(size: 23))
                             .fontWeight(.bold)
@@ -60,11 +60,6 @@ struct CurrencyView: View {
                 
                 ScrollView {
                     // adjust scroll bar when keyboard is shown
-                   
-           
-                    
-                   
-                    
                     renderCurrencyInput(currecny: mainCurrency, value: $mainCurrencyValue, currentValueFocus: .main)
                     BlueDivider()
                     Image(systemName: "arrow.up.arrow.down")

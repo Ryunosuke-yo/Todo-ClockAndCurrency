@@ -32,8 +32,13 @@ extension CurrencyView {
             return inc
         }
         
-      
-        
+        func defaultCurrencyValueOrCurrecny (currency: String)-> String {
+            if currency == "" {
+                return "currecny"
+            }
+            
+            return currency
+        }
        
     }
 }
